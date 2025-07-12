@@ -50,4 +50,11 @@ const deleteUser = async (req, res) => {
   }
 }
 
-module.exports = { findId, updateId, deleteUser }
+const getUsers = async (req, res) => {
+  const role = req.user.role
+  if (role !== 'admin') return res.sendStatus(401)
+  const users = await pool.query('SELECT * FROM users')
+  res.json(users.rows);
+}
+
+module.exports = { findId, updateId, deleteUser, getUsers }

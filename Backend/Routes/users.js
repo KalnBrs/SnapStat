@@ -4,19 +4,14 @@ const bcrypt = require('bcrypt')
 
 
 const { authenticateToken } = require('../Controllers/authControllers')
-const { findId, updateId, deleteUser } = require('../Controllers/usersControllers')
+const { findId, updateId, deleteUser, getUsers } = require('../Controllers/usersControllers')
 
 const router = express.Router()
 router.use(express.json())
 router.use('/', authenticateToken)
 
 // Get all users
-router.get('/', authenticateToken, async (req, res) => {
-  const role = req.user.role
-  if (role !== 'admin') return res.sendStatus(401)
-  const users = await pool.query('SELECT * FROM users')
-  res.json(users.rows);
-})
+router.get('/', getUsers)
 
 // Get a specific user
 router.param('id', findId)
