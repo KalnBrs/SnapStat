@@ -38,7 +38,7 @@ const login = async (req, res) => {
         path: 'api/auth/refresh',  
         maxAge: 7 * 24 * 60 * 60 * 1000, 
       });
-      res.json({ accessToken: accessToken })
+      res.json({ accessToken: accessToken, user: user })
     } else {
       res.send('Not Allowed')
     }

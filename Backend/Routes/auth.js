@@ -1,9 +1,5 @@
 const express = require('express');
-const jwt = require('jsonwebtoken')
-const path = require('path')
-const pool = require('../Database/db')
-const bcrypt = require('bcrypt')
-const redisClient = require('../Database/redisClient')
+
 
 const { authenticateToken, login, logout, register, refresh, getMe } = require('../Controllers/authControllers')
 
