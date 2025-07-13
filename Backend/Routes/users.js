@@ -1,6 +1,5 @@
 const express = require('express')
 
-
 const { authenticateToken } = require('../Controllers/authControllers')
 const { findId, updateId, deleteUser, getUsers } = require('../Controllers/usersControllers')
 
