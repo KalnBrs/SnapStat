@@ -1,3 +1,5 @@
 node_modules
 Database/scripts.sql
 .env
+*.rest
+scripts.txt
