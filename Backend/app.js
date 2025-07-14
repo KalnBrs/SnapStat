@@ -14,9 +14,11 @@ app.use(cookieParser())
 const authRoute = require('./Routes/auth')
 const usersRoute = require('./Routes/users')
 const teamsRoute = require('./Routes/teams')
+const playersRoute = require('./Routes/players')
 app.use('/api/auth', authRoute)
 app.use('/api/users', usersRoute)
 app.use('/api/teams', teamsRoute)
+app.use('/api/players', playersRoute)
 
 app.get('/', (req, res) => {
   res.send('Welcome to the API')

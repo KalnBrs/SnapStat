@@ -76,7 +76,6 @@ const register = async (req, res) => {
 }
 
 const refresh = async (req, res) => {
-  console.log(req.cookies.refreshToken)
   const refreshToken = req.cookies.refreshToken
   if (!refreshToken) return res.sendStatus(401)
   try {

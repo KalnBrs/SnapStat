@@ -1,6 +1,5 @@
 const pool = require('../Database/db')
 
-
 const findTeamId = async (req, res, next, value) => {
   try {
     const result = await pool.query('SELECT * FROM teams WHERE team_id = $1', [value])
@@ -38,7 +37,6 @@ const updateTeam = async (req, res) => {
   if (setClauses.length === 0) return res.sendStatus(406)
   values.push(req.team.team_id)
   const query = `UPDATE teams SET ${setClauses.join(', ')} WHERE team_id = $${index} RETURNING team_id, team_name, abbreviation, color, logo_url`
-  console.log(query)
   try {
     const result = await pool.query(query, values)
     res.json(result.rows[0])
@@ -54,13 +52,10 @@ const insertTeam = async (req, res) => {
   const placeholders = []
   let index = 1
 
-  console.log(req.body)
   const body = req.body
-  console.log(body)
   for (let key in body) {
     if (!allowedColumns.includes(key)) throw new Error('Column Not allowed')
     insertClauses.push(`${key}`)
-    console.log(body.key)
     values.push(`$${index}`)
     placeholders.push(body[key])
     index++

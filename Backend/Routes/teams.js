@@ -11,7 +11,7 @@ router.post('/', authenticateToken, insertTeam)
 router.param('id', findTeamId)
 
 router.route('/:id')
-  .get((req, res) => { res.json(req.team) })
+  .get(authenticateToken, (req, res) => { res.json(req.team) })
   .patch(authenticateToken, updateTeam)
 
 module.exports = router
