@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
-const pool = require('../Database/db')
+const pool = require('../Config/db')
 const bcrypt = require('bcrypt')
-const redisClient = require('../Database/redisClient')
+const redisClient = require('../Config/redisClient')
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization']
@@ -9,7 +9,7 @@ function authenticateToken(req, res, next) {
   if (token == null) return res.sendStatus(401)
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403) 
+    if (err) return res.sendStatus(403)
     req.user = user
     next()
   })
@@ -23,7 +23,7 @@ const login = async (req, res) => {
     if (await bcrypt.compare(req.body.password, user1.password)) {
       const username = user1.username
       const role = user1.role
-      const user = { username: username, role: role}
+      const user = { username: username, role: role }
       const accessToken = generateAccessToken(user)
       const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' })
 
@@ -32,11 +32,11 @@ const login = async (req, res) => {
       })
 
       res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,        
-        secure: true,           
-        sameSite: 'Strict', 
-        path: 'api/auth/refresh',  
-        maxAge: 7 * 24 * 60 * 60 * 1000, 
+        httpOnly: true,
+        secure: true,
+        sameSite: 'Strict',
+        path: 'api/auth/refresh',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       });
       res.json({ accessToken: accessToken, user: user })
     } else {
@@ -44,7 +44,7 @@ const login = async (req, res) => {
     }
   } catch (err) {
     res.status(500).send(err.message)
-  } 
+  }
 }
 
 const logout = async (req, res) => {
@@ -83,7 +83,7 @@ const refresh = async (req, res) => {
 
     const storedUser = JSON.parse(await redisClient.get(refreshToken))
     if (!storedUser || storedUser.username !== verify.username) return res.sendStatus(403)
-    
+
     const newToken = generateAccessToken(storedUser)
     res.json({ accessToken: newToken })
   } catch (err) {
@@ -101,4 +101,4 @@ function generateAccessToken(user) {
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' })
 }
 
-module.exports = {authenticateToken, login, logout, register, refresh, getMe}
+module.exports = { authenticateToken, login, logout, register, refresh, getMe }

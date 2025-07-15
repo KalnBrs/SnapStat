@@ -1,4 +1,4 @@
-const pool = require('../Database/db')
+const pool = require('../Config/db')
 const bcrypt = require('bcrypt')
 
 const findId = async (req, res, next, value) => {
@@ -10,7 +10,7 @@ const findId = async (req, res, next, value) => {
   } catch (err) {
     res.sendStatus(500)
   }
-} 
+}
 
 const updateId = async (req, res) => {
   const allowedColumns = ["username", "email", "password", "role"]
@@ -19,7 +19,7 @@ const updateId = async (req, res) => {
   let index = 1
 
   const updates = req.body.updates
-  for (let key in updates){
+  for (let key in updates) {
     if (!allowedColumns.includes(key)) throw new Error(`Invalid column: ${key}`)
     setClauses.push(`${key} = $${index}`)
     values.push(updates[key])
@@ -29,7 +29,7 @@ const updateId = async (req, res) => {
   values.push(req.user.user_id)
   const query = `UPDATE users SET ${setClauses.join(', ')} WHERE user_id = $${index} RETURNING user_id, username, email, role`
 
-  try{
+  try {
     const result = await pool.query(query, values)
     res.json(result.rows[0])
   } catch (err) {

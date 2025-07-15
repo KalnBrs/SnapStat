@@ -1,4 +1,4 @@
-const pool = require('../Database/db')
+const pool = require('../Config/db')
 
 const findTeamId = async (req, res, next, value) => {
   try {

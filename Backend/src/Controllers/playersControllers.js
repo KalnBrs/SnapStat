@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
-const pool = require('../Database/db')
+const pool = require('../Config/db')
 const bcrypt = require('bcrypt')
-const redisClient = require('../Database/redisClient')
+const redisClient = require('../Config/redisClient')
 
 const findPlayerId = async (req, res, next, value) => {
   try {
@@ -25,7 +25,7 @@ const getAllPlayers = async (req, res) => {
 }
 
 const insertPlayer = async (req, res) => {
-  const allowedColumns = ['name', 'number', 'team_id'] 
+  const allowedColumns = ['name', 'number', 'team_id']
   const insertClauses = []
   const values = []
   const placeholders = []

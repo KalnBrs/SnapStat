@@ -4,3 +4,4 @@ Database/scripts.sql
 .env
 *.rest
 scripts.txt
+Models

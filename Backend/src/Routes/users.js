@@ -13,7 +13,7 @@ router.get('/', authenticateToken, getUsers)
 router.param('id', findId)
 
 router.route('/:id')
-  .get((req, res) => {res.json(req.user)})
+  .get((req, res) => { res.json(req.user) })
   .patch(authenticateToken, updateId)
   .delete(authenticateToken, deleteUser)
 
