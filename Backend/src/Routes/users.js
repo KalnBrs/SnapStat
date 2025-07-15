@@ -6,15 +6,17 @@ const { findId, updateId, deleteUser, getUsers } = require('../Controllers/users
 const router = express.Router()
 router.use(express.json())
 
+router.use('/', authenticateToken)
+
 // Get all users
-router.get('/', authenticateToken, getUsers)
+router.get('/', getUsers)
 
 // Get a specific user
 router.param('id', findId)
 
 router.route('/:id')
   .get((req, res) => { res.json(req.user) })
-  .patch(authenticateToken, updateId)
-  .delete(authenticateToken, deleteUser)
+  .patch(updateId)
+  .delete(deleteUser)
 
 module.exports = router

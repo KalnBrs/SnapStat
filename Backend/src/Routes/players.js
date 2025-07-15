@@ -5,13 +5,15 @@ const { authenticateToken } = require('../Controllers/authControllers')
 
 const router = express.Router()
 
-router.get('/', authenticateToken, getAllPlayers)
-router.post('/', authenticateToken, insertPlayer)
+router.use('/', authenticateToken)
+
+router.get('/', getAllPlayers)
+router.post('/', insertPlayer)
 
 router.param('id', findPlayerId)
 
 router.route('/:id')
-  .get(authenticateToken, (req, res) => { res.json(req.player) })
-  .patch(authenticateToken, updatePlayer)
+  .get((req, res) => { res.json(req.player) })
+  .patch(updatePlayer)
 
 module.exports = router
