@@ -14,7 +14,7 @@ const findTeamId = async (req, res, next, value) => {
 const getAllPlayersTeam = async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM players WHERE team_id = $1;', [req.team.team_id])
-    if (result.rows.length === 0) return res.status(404).send('No Teams')
+    if (result.rows.length === 0) return res.status(404).send('No Players')
     res.json(result.rows)
   } catch (err) {
     res.sendStatus(500)
