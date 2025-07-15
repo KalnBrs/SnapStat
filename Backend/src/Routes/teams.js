@@ -1,17 +1,20 @@
 const express = require('express')
 
 const { authenticateToken } = require('../Controllers/authControllers')
-const { getAllTeams, insertTeam, findTeamId, updateTeam } = require('../Controllers/teamsControllers')
+const { getAllTeams, insertTeam, findTeamId, updateTeam, getAllPlayersTeam } = require('../Controllers/teamsControllers')
 
 const router = express.Router()
 
-router.get('/', authenticateToken, getAllTeams)
-router.post('/', authenticateToken, insertTeam)
+router.use('/', authenticateToken)
+
+router.get('/', getAllTeams)
+router.post('/', insertTeam)
 
 router.param('id', findTeamId)
 
+router.get('/:id/players', getAllPlayersTeam)
 router.route('/:id')
-  .get(authenticateToken, (req, res) => { res.json(req.team) })
-  .patch(authenticateToken, updateTeam)
+  .get((req, res) => { res.json(req.team) })
+  .patch(updateTeam)
 
 module.exports = router

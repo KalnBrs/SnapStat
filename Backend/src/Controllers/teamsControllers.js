@@ -11,6 +11,16 @@ const findTeamId = async (req, res, next, value) => {
   }
 }
 
+const getAllPlayersTeam = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM players WHERE team_id = $1;', [req.team.team_id])
+    if (result.rows.length === 0) return res.status(404).send('No Teams')
+    res.json(result.rows)
+  } catch (err) {
+    res.sendStatus(500)
+  }
+}
+
 const getAllTeams = async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM teams;')
@@ -62,7 +72,6 @@ const insertTeam = async (req, res) => {
   }
   if (insertClauses.length === 0) return res.sendStatus(406)
   const query = `INSERT INTO teams (${insertClauses.join(', ')}) VALUES(${values.join(', ')}) RETURNING *`
-  console.log(query);
   try {
     const result = await pool.query(query, placeholders)
     res.json(result.rows[0])
@@ -71,4 +80,4 @@ const insertTeam = async (req, res) => {
   }
 }
 
-module.exports = { getAllTeams, insertTeam, findTeamId, updateTeam }
+module.exports = { getAllTeams, insertTeam, findTeamId, updateTeam, getAllPlayersTeam }
