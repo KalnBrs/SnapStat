@@ -38,8 +38,10 @@ const startDrive = async (req, res) => {
   }
   if (insertClauses.length === 0) return res.sendStatus(406)
   const query = `INSERT INTO drives (${insertClauses.join(', ')}) VALUES(${values.join(', ')}) RETURNING *`
+  
   try {
     const result = await pool.query(query, placeholders)
+    await pool.query('UPDATE games SET current_drive_id = $1 WHERE game_id = $2', [result.rows[0].drive_id, req.game.game_id])
     res.json(result.rows[0])
   } catch (err) {
     res.status(500).send(err.message)
@@ -64,6 +66,7 @@ const endDrive = async (req, res) => {
   const query = `UPDATE drives SET ${setClauses.join(', ')} WHERE drive_id = $${index} RETURNING *`
   try {
     const result = await pool.query(query, values)
+    await pool.query('UPDATE games SET current_drive_id = null WHERE game_id = $1', [req.game.game_id]) 
     res.json(result.rows[0])
   } catch (err) {
     res.status(500).send(err.message)

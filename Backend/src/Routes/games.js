@@ -4,6 +4,8 @@ const router = express.Router()
 const { authenticateToken } = require('../Controllers/authControllers')
 const { getAllGames, insertGame, findGameId, updateGame } = require('../Controllers/gamesController')
 const { getDrives, startDrive, findDriveId, endDrive } = require('../Controllers/drivesControllers')
+const { getAllPlays, submitPlay } = require('../Controllers/playsControllers')
+
 
 router.use('/', authenticateToken)
 
@@ -24,6 +26,11 @@ router.route('/:id/drives')
 router.param('Did', findDriveId)
 
 router.route('/:id/drives/:Did')
-  .put(endDrive)
+  .get(async (req, res) => { res.json(req.drive)})
+  .put(endDrive) // End a drive
+
+router.route('/:id/plays')
+  .get(getAllPlays) // Get all plays 
+  .post(submitPlay) // Submit a play
 
 module.exports = router
