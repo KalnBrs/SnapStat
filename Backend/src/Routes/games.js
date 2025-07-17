@@ -5,6 +5,7 @@ const { authenticateToken } = require('../Controllers/authControllers')
 const { getAllGames, insertGame, findGameId, updateGame } = require('../Controllers/gamesController')
 const { getDrives, startDrive, findDriveId, endDrive } = require('../Controllers/drivesControllers')
 const { getAllPlays, submitPlay } = require('../Controllers/playsControllers')
+const { getState, updateState } = require('../Controllers/stateControllers')
 
 
 router.use('/', authenticateToken)
@@ -18,6 +19,11 @@ router.param('id', findGameId)
 router.route('/:id')
   .get(async (req, res) => {res.json(req.game)})
   .patch(updateGame)
+
+router.route('/:id/state')
+  .get(getState)
+  .post(updateState) // Update State
+  // .delete() // Clear state on game finish
 
 router.route('/:id/drives')
   .get(getDrives) // Get all drives

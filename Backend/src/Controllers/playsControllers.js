@@ -71,7 +71,7 @@ function buildStatSQL(player_id, game_id, updates) {
   const sql = `
     INSERT INTO player_stats (${insertCols})
     VALUES (${insertVals})
-    ON CONFLICT (player_id)
+    ON CONFLICT (player_id, game_id)
     DO UPDATE SET ${updateClause};
   `;
 
