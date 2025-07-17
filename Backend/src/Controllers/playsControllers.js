@@ -51,7 +51,7 @@ const submitPlay = async (req, res) => {
     await client.query('COMMIT;')
     res.json({ game: game.rows[0], play: play.rows[0] })
   } catch (err) {
-    res.status(500).send(err.message)
+    res.sendStatus(500)
   }
 }
 

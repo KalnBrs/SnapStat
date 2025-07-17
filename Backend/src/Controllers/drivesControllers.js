@@ -7,7 +7,7 @@ const findDriveId = async (req, res, next, value) => {
     req.drive = result.rows[0]
     next()
   } catch (err) {
-    res.status(500).send(err.message)
+    res.sendStatus(500)
   }
 }
 
@@ -44,7 +44,7 @@ const startDrive = async (req, res) => {
     await pool.query('UPDATE games SET current_drive_id = $1 WHERE game_id = $2', [result.rows[0].drive_id, req.game.game_id])
     res.json(result.rows[0])
   } catch (err) {
-    res.status(500).send(err.message)
+    res.sendStatus(500)
   }
 }
 
@@ -69,7 +69,7 @@ const endDrive = async (req, res) => {
     await pool.query('UPDATE games SET current_drive_id = null WHERE game_id = $1', [req.game.game_id]) 
     res.json(result.rows[0])
   } catch (err) {
-    res.status(500).send(err.message)
+    res.sendStatus(500)
   }
 }
 

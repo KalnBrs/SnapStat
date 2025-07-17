@@ -43,7 +43,7 @@ const login = async (req, res) => {
       res.send('Not Allowed')
     }
   } catch (err) {
-    res.status(500).send(err.message)
+    res.sendStatus(500)
   }
 }
 
@@ -87,7 +87,7 @@ const refresh = async (req, res) => {
     const newToken = generateAccessToken(storedUser)
     res.json({ accessToken: newToken })
   } catch (err) {
-    res.status(500).send(err.message)
+    res.sendStatus(500)
   }
 }
 

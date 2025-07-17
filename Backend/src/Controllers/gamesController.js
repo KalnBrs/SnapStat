@@ -9,7 +9,7 @@ const findGameId = async (req, res, next, value) => {
     req.game = result.rows[0]
     next()
   } catch (err) {
-    res.status(500).send(err.message)
+    res.sendStatus(500)
   }
 }
 
@@ -32,7 +32,7 @@ const updateGame = async (req, res) => {
     const result = await pool.query(query, values)
     res.json(result.rows[0])
   } catch (err) {
-    res.status(500).send(err.message)
+    res.sendStatus(500)
   }
 }
 
@@ -66,7 +66,7 @@ const insertGame = async (req, res) => {
     const result = await pool.query(query, placeholders)
     res.json(result.rows[0])
   } catch (err) {
-    res.status(500).send(err.message)
+    res.sendStatus(500)
   }
 }
 

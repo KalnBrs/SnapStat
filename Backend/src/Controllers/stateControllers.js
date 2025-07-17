@@ -35,7 +35,7 @@ const clearState = async (req, res) => {
     if (result.rows.length === 0) return res.status(404).send('Game Not Found')
     res.json(result.rows[0])
   } catch (err) {
-    res.status(500).send(err.message)
+    res.sendStatus(500)
   }
 }
 

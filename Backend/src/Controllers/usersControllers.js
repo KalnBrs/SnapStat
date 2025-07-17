@@ -33,7 +33,7 @@ const updateId = async (req, res) => {
     const result = await pool.query(query, values)
     res.json(result.rows[0])
   } catch (err) {
-    res.status(500).send
+    res.sendStatus(500)
   }
 }
 
@@ -46,7 +46,7 @@ const deleteUser = async (req, res) => {
       res.json(deletedUser.rows[0])
     }
   } catch (err) {
-    res.status(500).send(err.message)
+    res.sendStatus(500)
   }
 }
 

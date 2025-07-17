@@ -7,7 +7,7 @@ const findTeamId = async (req, res, next, value) => {
     req.team = result.rows[0]
     next()
   } catch (err) {
-    res.status(500).send(err.message)
+    res.sendStatus(500)
   }
 }
 
@@ -51,7 +51,7 @@ const updateTeam = async (req, res) => {
     const result = await pool.query(query, values)
     res.json(result.rows[0])
   } catch (err) {
-    res.status(500).send(err.message)
+    res.sendStatus(500)
   }
 }
 
@@ -76,7 +76,7 @@ const insertTeam = async (req, res) => {
     const result = await pool.query(query, placeholders)
     res.json(result.rows[0])
   } catch (err) {
-    res.status(500).send(err.message)
+    res.sendStatus(500)
   }
 }
 
