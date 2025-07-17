@@ -5,7 +5,7 @@ const { authenticateToken } = require('../Controllers/authControllers')
 const { getAllGames, insertGame, findGameId, updateGame } = require('../Controllers/gamesController')
 const { getDrives, startDrive, findDriveId, endDrive } = require('../Controllers/drivesControllers')
 const { getAllPlays, submitPlay } = require('../Controllers/playsControllers')
-const { getState, updateState } = require('../Controllers/stateControllers')
+const { getState, updateState, clearState } = require('../Controllers/stateControllers')
 
 
 router.use('/', authenticateToken)
@@ -23,7 +23,7 @@ router.route('/:id')
 router.route('/:id/state')
   .get(getState)
   .post(updateState) // Update State
-  // .delete() // Clear state on game finish
+  .delete(clearState) // Clear state on game finish
 
 router.route('/:id/drives')
   .get(getDrives) // Get all drives

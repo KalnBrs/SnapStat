@@ -25,12 +25,18 @@ const updateState = async (req, res) => {
     const result = await pool.query(query, values)
     res.json(result.rows[0])
   } catch (err) {
-    res.status(500).send(err.message)
+    res.sendStatus(500)
   }
 }
 
 const clearState = async (req, res) => {
-  const result = await pool.query('UPDATE games SET quarter = 0, down = 0, distance = 0, ball_on_yard = 0, possession_team_id, current_drive_id = 0 WHERE game_id = $1', [req.game.game_id])
+  try { 
+    const result = await pool.query('UPDATE games SET quarter = null, down = null, distance = null, ball_on_yard = null, possession_team_id = null, current_drive_id = null WHERE game_id = $1 RETURNING *;', [req.game.game_id])
+    if (result.rows.length === 0) return res.status(404).send('Game Not Found')
+    res.json(result.rows[0])
+  } catch (err) {
+    res.status(500).send(err.message)
+  }
 }
 
 module.exports = {getState, updateState, clearState}
