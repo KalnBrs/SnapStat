@@ -1,0 +1,19 @@
+.playerNode {
+  position: absolute;
+  top: 0;
+  left: -17px;
+  width: 30px;
+  height: 30px;
+  background-color: blue;
+  color: black;
+  text-align: center;
+  font-size: xx-small;
+  font-weight: bold;
+  border-radius: 100%;
+  border: solid black 2px;
+  display: flex;
+  justify-items: center;
+  justify-content: center;
+  z-index: 3;
+  box-sizing: border-box; /* crucial */
+}

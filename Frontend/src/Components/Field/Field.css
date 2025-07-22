@@ -1,0 +1,134 @@
+.field, .yard, .yard.ten, .yard.five, .playerNode {
+  box-sizing: border-box;
+}
+
+.field {
+  box-sizing: border-box;
+  position: relative;
+  width: 1100px;         
+  height: 400px;
+  background: green;
+  border: 2px solid white;
+  white-space: nowrap; /* Keeps all blocks on the same line */
+  font-size: 0; /* Remove inline spacing */
+}
+
+.yard-numbers-overlay {
+  position: absolute;
+  top: -16px; /* adjust to sit above the field */
+  left: 5%; /* account for left endzone if it’s 5% */
+  width: 90%; /* exclude endzones */
+  height: 20px;
+  pointer-events: none;
+}
+
+.yard-number-abs {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.endzone {
+  width: 50px;
+  height: 100%;
+  background-color: #0033cc;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top:0;
+  left: 100;
+  display: inline-block;
+}
+
+.endzone-label {
+  transform: rotate(-90deg);
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.left-endzone {
+  left: 0;
+  box-sizing: border-box;
+  border-right: 2px solid white;
+}
+
+.right-endzone {
+  right: 0;
+  box-sizing: border-box;
+  border-left: 2px solid white;
+}
+
+.yard-numbers {
+  display: flex;
+  width: 100%;
+  height: 20px;
+  margin-left: 5%; /* skip left endzone width */
+  margin-right: 5%; /* skip right endzone width */
+}
+
+.yard-number-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.yard-number {
+  font-size: 200px;
+  font-weight: bold;
+}
+
+.yard {
+  width: 10px;
+  height: 100%;
+  position: relative;
+  display: inline-block;
+}
+
+.yard.ten {
+  box-sizing: border-box;
+  border-left: 2px solid white;
+}
+
+.yard.five {
+  box-sizing: border-box;
+  border-left: 1px solid white;
+}
+
+.hash {
+  position: absolute;
+  width: 2px;
+  height: 10px;
+  background-color: white;
+}
+
+.left-hash {
+  top: 30%;   /* Adjust as needed */
+  left: 0;
+  transform: translateX(-50%);
+}
+
+.right-hash {
+  top: 70%;   /* Adjust as needed */
+  left: 0;
+  transform: translateX(-50%);
+}
+
+.line-of-scrimmage,
+.first-down-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  z-index: 1;
+}
+
+.line-of-scrimmage {
+  background-color: blue;
+}
+
+.first-down-line {
+  background-color: yellow;
+}
