@@ -7,7 +7,6 @@ const ENDZONE_WIDTH = 50;
 const YARD_WIDTH = 10;
 
 const PlayerNode = ({ node, id, setNodes, color }) => {
-  console.log(node)
   const [pos, setPos] = useState({ x: node["x"], y: node["y"] });
   const nodeRef = useRef(null); 
 
@@ -29,7 +28,6 @@ const PlayerNode = ({ node, id, setNodes, color }) => {
     }));
   };  
 
-  console.log('rendered')
   return (
     <Draggable
       nodeRef={nodeRef}

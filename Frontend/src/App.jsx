@@ -7,9 +7,10 @@ import './App.css'
 
 import Field from './Components/Field'
 import Scoreboard from './Components/Scoreboard';
+import SidePannel from './Components/SidePannel';
+import Error from './Components/Error';
 
 function App() {
-  const [count, setCount] = useState(0)
   const [gameState, setGameState] = useState({
     game_id: 2,
     home_team_id: 1,
@@ -42,15 +43,22 @@ function App() {
       "logo_url": null
     }
   })
+  const [errObj, setErrObj] = useState({show: false, message: ''})
 
   return (
-    <div className='flex flex-row'>
-      <div>
-        <Scoreboard data={{game_state: gameState, teams: teams}} />
-        <Field home_color={'#78ADD5'} away_color={'#D12026'} game_state={gameState} teams={teams} />
+    <>
+      <Error show={errObj.show} setErrObj={setErrObj} message={errObj.message} />
+      <div className='flex flex-row'>
+        
+        <div className='pr-10'>
+          <Scoreboard data={{game_state: gameState, teams: teams}} />
+          <Field home_color={'#78ADD5'} away_color={'#D12026'} game_state={gameState} teams={teams} />
+        </div>
+        <div className='w-200'>
+          <SidePannel data={{teams: teams}} gameState={gameState} setGameState={setGameState} setErrObj={setErrObj}/>
+        </div>
       </div>
-      <div className='h-10000000'></div>
-    </div>
+    </>
   )
 }
 

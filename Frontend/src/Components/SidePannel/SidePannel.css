@@ -1,0 +1,22 @@
+.topic {
+  text-wrap: nowrap;
+  font-weight: bold;
+}
+
+.break {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border-top: 4px solid white;
+}
+
+.quarterSelect {
+  background-color: grey;
+  border: 2px solid darkgray;
+  border-radius: 15px;
+  margin-bottom: 10px;
+}
+
+.quarterButton {
+
+  padding: 5px;
+}
