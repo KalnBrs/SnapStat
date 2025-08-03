@@ -9,55 +9,24 @@ import Field from './Components/Field'
 import Scoreboard from './Components/Scoreboard';
 import SidePannel from './Components/SidePannel';
 import Error from './Components/Error';
+import PlaySelect from './Components/PlaySelect';
 
 function App() {
-  const [gameState, setGameState] = useState({
-    game_id: 2,
-    home_team_id: 1,
-    away_team_id: 2,
-    home_score: 0,
-    away_score: 8,
-    home_timeouts: 3,
-    away_timeouts: 3,
-    quarter: 1,
-    down: 1,
-    distance: 10,
-    ball_on_yard: 25,
-    possession_team_id: 1,
-    current_drive_id: 6
-  })
-
-  const [teams, setTeams] = useState({
-    home_team: {
-      "team_id": "1",
-      "team_name": "Monona Grove",
-      "abbreviation": "MG",
-      "color": "#78ADD5",
-      "logo_url": "https://sportshub2-uploads.vnn-prod.zone/files/sites/3605/2023/02/17230909/MGSD_MGHS_Mascot-Icon_Full-Color_SPOT-1-1.png"
-    },
-    away_team: {
-      "team_id": "2",
-      "team_name": "Sun Praire East",
-      "abbreviation": "SPE",
-      "color": "#D12026",
-      "logo_url": null
-    }
-  })
   const [errObj, setErrObj] = useState({show: false, message: ''})
 
   return (
     <>
-      <Error show={errObj.show} setErrObj={setErrObj} message={errObj.message} />
+      <Error />
       <div className='flex flex-row'>
-        
         <div className='pr-10'>
-          <Scoreboard data={{game_state: gameState, teams: teams}} />
-          <Field home_color={'#78ADD5'} away_color={'#D12026'} game_state={gameState} teams={teams} />
+          <Scoreboard />
+          <Field />
         </div>
         <div className='w-200'>
-          <SidePannel data={{teams: teams}} gameState={gameState} setGameState={setGameState} setErrObj={setErrObj}/>
+          <SidePannel />
         </div>
       </div>
+      <PlaySelect />
     </>
   )
 }

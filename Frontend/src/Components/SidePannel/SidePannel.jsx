@@ -3,7 +3,9 @@ import { useState } from 'react'
 import ConfirmationModal from '../ConfirmationModal'
 
 import './SidePannel.css'
-import Error from '../Error';
+import { useDispatch, useSelector } from 'react-redux';
+import { setGame } from '../../Features/game/gameSlice';
+import { setError } from '../../Features/error/errorSlice';
 
 const prefix = {
   1: 'st',
@@ -12,16 +14,18 @@ const prefix = {
   4: 'th'
 }
 
-function SidePannel({ data, setGameState, setErrObj, gameState }) {
+function SidePannel() {
+  const homeTeam = useSelector(state => state.team.home)
+  const awayTeam = useSelector(state => state.team.away)
+  const gameState = useSelector(state => state.game.game)
+  const dispatch = useDispatch()
+
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [confirmationTeam, setConfirmationTeam] = useState(null)
   const [confirmationTeamValue, setConfirmationTeamValue] = useState('')
 
   const [selectedValue, setSelectedValue] = useState(gameState.quarter)
   const [showQuarter, setShowQuarter] = useState(false)
-  
-  const homeTeam = data.teams.home_team 
-  const awayTeam = data.teams.away_team
 
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
@@ -30,8 +34,8 @@ function SidePannel({ data, setGameState, setErrObj, gameState }) {
   const handleQuarterOpen = () => { setShowQuarter(true) }
 
   const handleQuarterConfirm = () => { 
-    setGameState(prevGameState => ({
-      ...prevGameState,
+    dispatch(setGame({
+      ...gameState,
       quarter: selectedValue
     }))
     setShowQuarter(false) 
@@ -47,13 +51,13 @@ function SidePannel({ data, setGameState, setErrObj, gameState }) {
 
   const handleConfirm = () => {
     if (gameState[confirmationTeamValue] <= 0) {
-      setErrObj({show: true, message: 'This team has reached 0 timeouts'})
+      dispatch(setError({show: true, message: 'This team has reached 0 timeouts'}))
       handleClose()
       return
     }
-    setGameState(prevGameState => ({
-      ...prevGameState,
-      [confirmationTeamValue]: prevGameState[confirmationTeamValue] -= 1
+    dispatch(setGame({
+      ...gameState,
+      [confirmationTeamValue]: gameState[confirmationTeamValue] - 1
     }))
     // Update Timeouts
     handleClose()

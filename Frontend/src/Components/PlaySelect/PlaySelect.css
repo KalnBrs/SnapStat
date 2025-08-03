@@ -1,0 +1,16 @@
+.button {
+  background-color: blue;
+}
+
+.active {
+  border: 1px solid white;
+  background-color: #151E3F;
+}
+
+.active:focus {
+  outline: none;
+}
+
+button:focus {
+  outline: none;
+}

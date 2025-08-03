@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux'
 import './Scoreboard.css'
 
 const prefix = {
@@ -7,10 +8,10 @@ const prefix = {
   4: 'th'
 }
 
-function Scoreboard({ data }) {
-  const homeTeam = data.teams.home_team
-  const awayTeam = data.teams.away_team
-  const gameState = data.game_state
+function Scoreboard() {
+  const homeTeam = useSelector(state => state.team.home)
+  const awayTeam = useSelector(state => state.team.away)
+  const gameState = useSelector(state => state.game.game)
 
   const quarter = gameState.quarter === 5 ? 'OT' : gameState.quarter + prefix[gameState.quarter]
 

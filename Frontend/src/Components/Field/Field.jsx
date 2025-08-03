@@ -1,29 +1,42 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import PlayerNode from '../PlayerNode';
 
 import './Field.css'
+import { useSelector, useDispatch } from 'react-redux';
+import { setDefault, setOffenseNode, setDefenseNode } from '../../Features/node/nodeSlice';
 
 const YARD_WIDTH = 10;  // 10px per yard
 const ENDZONE_WIDTH = 50; // 5% of field width = 50px
 const FIELD_WIDTH = 1100; // 100 yards * 10px + 2*50 endzones
 
-function Field({ home_color, away_color, game_state, teams }) {
-  const [nodes, setNodes] = useState({
-    Start: {x: (game_state.ball_on_yard * YARD_WIDTH) + ENDZONE_WIDTH, y: 130},
-    End: {x: (30 * YARD_WIDTH) + ENDZONE_WIDTH, y: 130}
-  });
-  const [retCondition, setRetCondition] = useState(false);
-  const [retNodes, setRetNodes] = useState({
-    Start: {x: nodes.End.x, y: nodes.End.y + 40},
-    End: {x: nodes.Start.x, y: nodes.End.y + 40}
-  });
+function Field() {
+  const game_state = useSelector(state => state.game.game)
+  const nodes = useSelector(state => state.node.offenseNode)
+  const retNodes = useSelector(state => state.node.defenseNode)
+  const retCondition = useSelector(state => state.game.return)
+  const homeColor = useSelector(state => state.team.home.color)
+  const awayColor = useSelector(state => state.team.away.color)
+  const dispatch = useDispatch()
+
+  const [initialized, setInitialized] = useState(false);
+
+  useEffect(() => {
+    if (game_state.ball_on_yard !== undefined) {
+      dispatch(setDefault({
+        ballOnYard: game_state.ball_on_yard,
+        yardWidth: YARD_WIDTH,
+        endzoneWidth: ENDZONE_WIDTH
+      }))
+      setInitialized(true)
+    }
+  }, [game_state.ball_on_yard])
 
   return (
     <>
       <div style={{ width: FIELD_WIDTH, position: 'relative' }}>
         <YardNumbers />
-        <EndzonesField teams={teams}>
+        <EndzonesField>
           <div
             className="line-of-scrimmage"
             style={{ left: `${(game_state.ball_on_yard * YARD_WIDTH) + ENDZONE_WIDTH}px` }}
@@ -32,16 +45,16 @@ function Field({ home_color, away_color, game_state, teams }) {
             className="first-down-line"
             style={{ left: `${(game_state.ball_on_yard + game_state.distance) * YARD_WIDTH + ENDZONE_WIDTH}px` }}
           />
-          {Object.entries(nodes).map(([id, node]) => (
-            <PlayerNode key={id} node={node} id={id} setNodes={setNodes} color={home_color} />
+          {initialized && Object.entries(nodes).map(([id, node]) => (
+            <PlayerNode key={id} type={"off"} node={node} id={id} color={homeColor} />
           ))}
-          {retCondition && Object.entries(retNodes).map(([id, node]) => (
-            <PlayerNode key={id} node={node} id={id} setNodes={setRetNodes} color={away_color} />
+          {retCondition && initialized && Object.entries(retNodes).map(([id, node]) => (
+            <PlayerNode key={id} type={"def"} node={node} id={id} color={awayColor} />
           ))}
         </EndzonesField>
       </div>
       <div className='flex '>
-        <GainedInfo nodes={nodes} retNodes={retNodes} retCondition={retCondition} />
+        <GainedInfo />
       </div>
     </>
   );
@@ -61,10 +74,11 @@ function YardNumbers() {
   );
 }
 
-function EndzonesField({ children, teams }) {
+function EndzonesField({ children }) {
+  const teams = useSelector(state => state.team)
   return (
     <div className="field" style={{ width: FIELD_WIDTH, height: '400px', position: 'relative' }}>
-      <div className="endzone left-endzone" style={{ backgroundColor: teams.home_team.color }}><span className="endzone-label">{teams.home_team.abbreviation}</span></div>
+      <div className="endzone left-endzone" style={{ backgroundColor: teams.home.color }}><span className="endzone-label">{teams.home.abbreviation}</span></div>
       {Array.from({ length: 100 }, (_, i) => (
         <div key={i} className={`yard ${i % 10 === 0 ? 'ten' : i % 5 === 0 ? 'five' : ''}`}>
           {!(i % 10 === 0 || i % 5 === 0) &&
@@ -76,12 +90,16 @@ function EndzonesField({ children, teams }) {
         </div>
       ))}
       {children}
-      <div className="endzone right-endzone" style={{ backgroundColor: teams.away_team.color }}><span className="endzone-label">{teams.away_team.abbreviation}</span></div>
+      <div className="endzone right-endzone" style={{ backgroundColor: teams.away.color }}><span className="endzone-label">{teams.away.abbreviation}</span></div>
     </div>
   );
 }
 
-function GainedInfo({nodes, retNodes, retCondition}) {
+function GainedInfo() {
+  const retCondition = useSelector(state => state.game.return)
+  const nodes = useSelector(state => state.node.offenseNode)
+  const retNodes = useSelector(state => state.node.defenseNode)
+
   return (
     <>
       <p className='px-4.5 flex flex-col'><span className='font-bold'>Current Start Yard: </span> {(nodes.Start.x - 50) / 10}</p>

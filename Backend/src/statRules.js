@@ -41,8 +41,15 @@ const statRules = {
       ]
     },
     Fumble: {
+      passer: [
+        { stat: 'attempts', value: 1 },
+        { stat: 'completions', value: 1 },
+        { stat: 'passing_yards', fromValue: true }
+      ],
       receiver: [
-        { stat: 'fumbles', value: 1 }
+        { stat: 'fumbles', value: 1 },
+        { stat: 'receptions', value: 1 },
+        { stat: 'rec_yards', fromValue: true }
       ],
       fumble_recoverer: [
         { stat: 'fumble_recovery', value: 1 } 

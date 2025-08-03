@@ -1,14 +1,18 @@
 import './PlayerNode.css';
 import Draggable from 'react-draggable';
 import { useState, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setDefenseNode, setOffenseNode } from '../../Features/node/nodeSlice';
 
-const NODE_WIDTH = 30;
 const ENDZONE_WIDTH = 50;
 const YARD_WIDTH = 10;
 
-const PlayerNode = ({ node, id, setNodes, color }) => {
+const PlayerNode = ({ type, id, color, node }) => {
   const [pos, setPos] = useState({ x: node["x"], y: node["y"] });
+  const nodeFunc = type === "off" ? setOffenseNode : setDefenseNode
   const nodeRef = useRef(null); 
+  const dispatch = useDispatch()
+
 
   const handleDrag = (e, data) => {
     const snappedLeftX = Math.round(data.x / 10) * 10;
@@ -22,11 +26,12 @@ const PlayerNode = ({ node, id, setNodes, color }) => {
     if (move > maxX) move = maxX;
   
     setPos({ x: move, y: node.y });
-    setNodes(prev => ({
-      ...prev,
-      [id]: { x: move, y: node.y },
-    }));
-  };  
+    dispatch(nodeFunc({
+      id,
+      x: move,
+      y: node.y
+    }))
+  };
 
   return (
     <Draggable
