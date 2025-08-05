@@ -6,10 +6,22 @@ import Button from './Button'
 import { useDispatch, useSelector } from 'react-redux'
 import { setReturn } from '../../Features/game/gameSlice'
 
+const retTypes = [ { 
+    label: "Fumble", 
+    value: "fumble" 
+  }, {
+    label: "Interception",
+    value: "interception"
+  }]
+
 function Pass() {
   const [qbSelect, setQBSelect] = useState()
   const [wrSelect, setWRSelect] = useState()
   const [tackSelect, setTackSelect] = useState()
+  const [intercepter, setIntercepter] = useState()
+  const [fumbleRecoverer, setFumbleRecoverer] = useState()
+
+  const [retType, setRetType] = useState()
 
   const [incomplete, setIncomplete] = useState(false)
 
@@ -45,9 +57,20 @@ function Pass() {
           <div className='flex items-center justify-center mx-3'>
             <Button label={'Incomplete'} onClick={() => {setIncomplete(!incomplete); dispatch(setReturn(false))}} isActive={incomplete} width={200} margin={0} />
             <Button label={'Turnover'} onClick={() => {setIncomplete(false); dispatch(setReturn(!retCondition))}} isActive={retCondition} width={200} margin={0} />
+            { retCondition &&
+                              <>
+                                <p className='self-center font-bold mx-3'>Type: </p>
+                                <DropDown 
+                                  options={retTypes.map(retType => retType)} 
+                                  selectedValue={retType} 
+                                  setSelect={(option) => setRetType(option)} 
+                                />
+                              </>
+            }
           </div>
         </div>
         <div className='flex flex-row my-5'>
+          {!incomplete && !retCondition && <>
           <p className='self-center font-bold mx-3'>Tackler: </p>
           <DropDown options={oppOption.map(obj => ({
             ...obj,
@@ -56,6 +79,30 @@ function Pass() {
             }))} 
             selectedValue={tackSelect} 
             setSelect={(option) => setTackSelect(option)} />
+            </>
+          }
+          {retType?.value === "interception" && <>
+            <p className='self-center font-bold mx-3'>Intercepter: </p>
+            <DropDown options={oppOption.map(obj => ({
+              ...obj,
+              label: `#${obj.number} - ${obj.name}`,
+              value: obj.player_id 
+              }))} 
+              selectedValue={intercepter} 
+              setSelect={(option) => setIntercepter(option)} />
+              </>
+          }
+          {retType?.value === "fumble" && <>
+            <p className='self-center font-bold mx-3'>Fumble Recoverer: </p>
+            <DropDown options={oppOption.map(obj => ({
+              ...obj,
+              label: `#${obj.number} - ${obj.name}`,
+              value: obj.player_id 
+              }))} 
+              selectedValue={fumbleRecoverer} 
+              setSelect={(option) => setFumbleRecoverer(option)} />
+              </>
+          }
         </div>
       </div>
     </>
