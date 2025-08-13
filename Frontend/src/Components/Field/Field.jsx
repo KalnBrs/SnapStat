@@ -14,7 +14,10 @@ function Field() {
   const game_state = useSelector(state => state.game.game)
   const nodes = useSelector(state => state.node.offenseNode)
   const retNodes = useSelector(state => state.node.defenseNode)
+  const penNodes = useSelector(state => state.node.penaltyNode)
   const retCondition = useSelector(state => state.game.return)
+  const penCondition = useSelector(state => state.game.penalty)
+
   const homeColor = useSelector(state => state.team.home.color)
   const awayColor = useSelector(state => state.team.away.color)
   const dispatch = useDispatch()
@@ -50,6 +53,9 @@ function Field() {
           ))}
           {retCondition && initialized && Object.entries(retNodes).map(([id, node]) => (
             <PlayerNode key={id} type={"def"} node={node} id={id} color={awayColor} />
+          ))}
+          {penCondition && initialized && Object.entries(penNodes).map(([id, node]) => (
+            <PlayerNode key={id} type={"pen"} node={node} id={id} color={'yellow'} />
           ))}
         </EndzonesField>
       </div>
@@ -97,8 +103,10 @@ function EndzonesField({ children }) {
 
 function GainedInfo() {
   const retCondition = useSelector(state => state.game.return)
+  const penCondition = useSelector(state => state.game.penalty)
   const nodes = useSelector(state => state.node.offenseNode)
   const retNodes = useSelector(state => state.node.defenseNode)
+  const penNodes = useSelector(state => state.node.penaltyNode)
 
   return (
     <>
@@ -109,8 +117,16 @@ function GainedInfo() {
       <>
         <p className="px-4.5 flex flex-col"><span className="font-bold">Return Start Yard: </span>{(retNodes.Start.x - 50) / 10}</p>
         <p className="px-4.5 flex flex-col"><span className="font-bold">Return End Yard: </span>{(retNodes.End.x - 50) / 10}</p>
-        <p className="px-4.5 flex flex-col"><span className="font-bold">Return Yards Gained: </span>{((retNodes.End.x - 50) - (retNodes.Start.x - 50)) / 10}</p>
+        <p className="px-4.5 flex flex-col"><span className="font-bold">Return Yards Gained: </span>
+        {((retNodes.Start.x - 50) - (retNodes.End.x - 50)) / 10}</p>
       </> ) : '' }
+      {penCondition ? (
+        <> 
+          <p className='px-4.5 flex flex-col'><span className='font-bold'>Penalty Start Yard: </span> {(penNodes.Start.x - 50) / 10}</p>
+          <p className='px-4.5 flex flex-col'> <span className='font-bold'>Penalty End Yard: </span> {(penNodes.End.x - 50) / 10}</p>
+          <p className="px-4.5 flex flex-col"><span className="font-bold">Penalty Yards Gained: </span> {((penNodes.End.x - 50) - (penNodes.Start.x - 50)) / 10}</p>
+        </>
+      ) : ''}
   </>
   )
 }

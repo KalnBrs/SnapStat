@@ -19,7 +19,8 @@ const gameSlice = createSlice({
       current_drive_id: 6
     },
     offense: "home",
-    return: false
+    return: false,
+    penalty: false
   },
   reducers: {
     setGame: (state, action) => {
@@ -30,9 +31,12 @@ const gameSlice = createSlice({
     },
     setReturn: (state, action) => {
       state.return = action.payload
+    },
+    setPenalty: (state, action) => {
+      state.penalty = action.payload
     }
   }
 })
 
-export const { setGame, setOffense, setReturn } = gameSlice.actions
+export const { setGame, setOffense, setReturn, setPenalty } = gameSlice.actions
 export default gameSlice.reducer

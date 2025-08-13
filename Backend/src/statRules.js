@@ -186,7 +186,7 @@ const statRules = {
     Touchdown: {
       kicker: [
         { stat: 'kick', value: 1 },
-        { stat: 'punt_yard', fromValue: true }
+        { stat: 'kickoff_yard', fromValue: true }
       ],
       returner: [
         { stat: 'return_attempts', value: 1 },

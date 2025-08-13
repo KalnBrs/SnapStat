@@ -10,6 +10,10 @@ const nodeSlice = createSlice({
     defenseNode: {
       Start: { x: 0, y: 170 },
       End: { x: 0, y: 170 }
+    },
+    penaltyNode: {
+      Start: { x: 0, y: 210 },
+      End: { x: 0, y: 210 }
     }
   },
   reducers: {
@@ -28,6 +32,11 @@ const nodeSlice = createSlice({
         Start: { x: offenseEndX, y: 170 },
         End: { x: offenseStartX, y: 170 }
       };
+
+      state.penaltyNode = {
+        Start: { x: offenseEndX, y: 210 },
+        End: { x: offenseStartX, y: 210 }
+      };
     },
     setOffenseNode: (state, action) => {
       const { id, x, y } = action.payload;
@@ -36,9 +45,13 @@ const nodeSlice = createSlice({
     setDefenseNode: (state, action) => {
       const { id, x, y } = action.payload;
       state.defenseNode[id] = { x, y };
-    }
+    },
+    setPenaltyNode: (state, action) => {
+      const { id, x, y } = action.payload;
+      state.penaltyNode[id] = { x, y };
+    },
   }
 })
 
-export const { setDefault, setOffenseNode, setDefenseNode } = nodeSlice.actions
+export const { setDefault, setOffenseNode, setDefenseNode, setPenaltyNode } = nodeSlice.actions
 export default nodeSlice.reducer

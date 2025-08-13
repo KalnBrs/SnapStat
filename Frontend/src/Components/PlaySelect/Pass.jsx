@@ -4,7 +4,7 @@ import DropDown from './DropDown'
 import './PlaySelect.css'    
 import Button from './Button'
 import { useDispatch, useSelector } from 'react-redux'
-import { setReturn } from '../../Features/game/gameSlice'
+import { setPenalty, setReturn } from '../../Features/game/gameSlice'
 
 const retTypes = [ { 
     label: "Fumble", 
@@ -14,12 +14,14 @@ const retTypes = [ {
     value: "interception"
   }]
 
-function Pass() {
+function Pass({setFunc}) {
   const [qbSelect, setQBSelect] = useState()
   const [wrSelect, setWRSelect] = useState()
   const [tackSelect, setTackSelect] = useState()
   const [intercepter, setIntercepter] = useState()
   const [fumbleRecoverer, setFumbleRecoverer] = useState()
+
+  const [autoFirst, setAutoFirst] = useState(false)
 
   const [retType, setRetType] = useState()
 
@@ -28,6 +30,7 @@ function Pass() {
   const homeRoster = useSelector(state => state.roster.home)
   const awayRoster = useSelector(state => state.roster.away)
   const retCondition = useSelector(state => state.game.return)
+  const penCondition = useSelector(state => state.game.penalty)
   const offense = useSelector(state => state.game.offense)
   const dispatch = useDispatch()
 
@@ -57,6 +60,10 @@ function Pass() {
           <div className='flex items-center justify-center mx-3'>
             <Button label={'Incomplete'} onClick={() => {setIncomplete(!incomplete); dispatch(setReturn(false))}} isActive={incomplete} width={200} margin={0} />
             <Button label={'Turnover'} onClick={() => {setIncomplete(false); dispatch(setReturn(!retCondition))}} isActive={retCondition} width={200} margin={0} />
+            <Button label={'Penalty'} onClick={() => {dispatch(setPenalty(!penCondition)); setAutoFirst(false)}} isActive={penCondition} width={100} margin={0} />
+            {penCondition && <Button show={penCondition} label={'Auto First Down'} onClick={() => setAutoFirst(true)} isActive={autoFirst} width={150} margin={0} />}
+            
+
             { retCondition &&
                               <>
                                 <p className='self-center font-bold mx-3'>Type: </p>
@@ -104,6 +111,9 @@ function Pass() {
               </>
           }
         </div>
+      </div>
+      <div className='justify-center'>
+        <Button label={'Submit'} show={true} onClick={() => {console.log('submit'); setFunc('')}} />
       </div>
     </>
   )
