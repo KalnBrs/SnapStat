@@ -5,6 +5,7 @@ import './PlaySelect.css'
 import Button from './Button'
 import { useDispatch, useSelector } from 'react-redux'
 import { setPenalty, setReturn } from '../../Features/game/gameSlice'
+import { sendPass, calculateNextDownAndDistance } from '../../Scripts/sendPass'
 
 const retTypes = [ { 
     label: "Fumble", 
@@ -36,6 +37,92 @@ function Pass({setFunc}) {
 
   const options = offense === "home" ? homeRoster : awayRoster;
   const oppOption = offense === "home" ? awayRoster : homeRoster;
+
+  const nodes = useSelector(state => state.node.offenseNode)
+  const retNodes = useSelector(state => state.node.defenseNode)
+  const penNodes = useSelector(state => state.node.penaltyNode)
+
+  const currentDown = useSelector(state => state.game.game.down)
+  const currentDistance = useSelector(state => state.game.game.distance)
+
+  function generatePassPlay() {
+    const startYard = (nodes.Start.x - 50) / 10;
+    const endYardPass = (nodes.End.x - 50) / 10;
+    const penaltyYards = penCondition ? ((penNodes.End.x - 50) - (penNodes.Start.x - 50)) / 10 : 0;
+    const endYardFinal = endYardPass + penaltyYards;
+
+    // Initialize players array
+    const players = [
+        { player_id: qbSelect.player_id, role: "passer", value: endYardPass - startYard },
+        { player_id: wrSelect.player_id, role: "receiver", value: endYardPass - startYard }
+    ];
+
+    // Tackler (if completion or return occurs)
+    if (!incomplete && tackSelect) {
+        players.push({ player_id: tackSelect.player_id, role: "tackler", value: 1 });
+    }
+
+    // Turnover stats
+    if (retCondition && retType === "Interception" && intercepter) {
+        players.push({ player_id: intercepter.player_id, role: "interceptor", value: 1 });
+    }
+    if (retCondition && retType === "Fumble" && fumbleRecoverer) {
+        players.push({ player_id: fumbleRecoverer.player_id, role: "fumble_recoverer", value: 1 });
+    }
+
+    // Determine result
+    let result;
+    let touchdown = false;
+    let defenseScore = false;
+    let touchback = false;
+
+    // Offensive touchdown
+    if (!incomplete && !retCondition && endYardFinal >= 100) {
+        result = "Touchdown";
+        touchdown = true;
+    }
+    // Defensive score
+    else if (retCondition && (retType === "Interception" || retType === "Fumble") && (retNodes.End.x - 50)/10 >= 100) {
+        defenseScore = true;
+        if (retType === "Interception") result = "Pick-Six";
+        else result = "Scoop and Score";
+    }
+    // Regular turnover (no TD)
+    else if (retCondition && retType === "Interception") result = "Interception";
+    else if (retCondition && retType === "Fumble") result = "Fumble";
+    // Incomplete
+    else if (incomplete) result = "Incomplete";
+    // Normal completion
+    else result = "Completion";
+
+    // Touchback check (if defensive return ends in end zone)
+    if (retCondition && (retType === "Interception" || retType === "Fumble") && (retNodes.End.x - 50)/10 === 0) {
+        touchback = true;
+    }
+
+    // Determine next play setup
+    const nextPlay = calculateNextDownAndDistance(
+        currentDown,
+        currentDistance,
+        startYard,
+        endYardFinal,
+        retCondition && !defenseScore, // turnover flag (excluding defensive TD)
+        touchdown,
+        touchback,
+        defenseScore
+    );
+
+    return {
+        type: "pass",
+        result,
+        play_end: endYardPass,
+        end_yard: endYardFinal,
+        down_to: nextPlay.down_to,
+        distance_to: nextPlay.distance_to,
+        ball_on_yard: nextPlay.ball_on_yard,
+        players
+    };
+}
 
   return (
     <>
@@ -113,7 +200,7 @@ function Pass({setFunc}) {
         </div>
       </div>
       <div className='justify-center'>
-        <Button label={'Submit'} show={true} onClick={() => {console.log('submit'); setFunc('')}} />
+        <Button label={'Submit'} show={true} onClick={() => {console.log(generatePassPlay()); setFunc('')}} />
       </div>
     </>
   )
