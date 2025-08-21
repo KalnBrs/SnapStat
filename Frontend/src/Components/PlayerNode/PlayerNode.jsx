@@ -8,10 +8,10 @@ const ENDZONE_WIDTH = 50;
 const YARD_WIDTH = 10;
 
 const PlayerNode = ({ type, id, color, node }) => {
-  const [pos, setPos] = useState({ x: node["x"], y: node["y"] });
-  const nodeFunc = type === "off" ? setOffenseNode : type === "def" ? setDefenseNode : setPenaltyNode
   const nodeRef = useRef(null); 
   const dispatch = useDispatch()
+
+  const nodeFunc = type === "off" ? setOffenseNode : type === "def" ? setDefenseNode : setPenaltyNode
 
   const handleDrag = (e, data) => {
     const snappedLeftX = Math.round(data.x / 10) * 10;
@@ -24,7 +24,6 @@ const PlayerNode = ({ type, id, color, node }) => {
     if (move < minX) move = minX;
     if (move > maxX) move = maxX;
   
-    setPos({ x: move, y: node.y });
     dispatch(nodeFunc({
       id,
       x: move,
@@ -35,7 +34,7 @@ const PlayerNode = ({ type, id, color, node }) => {
   return (
     <Draggable
       nodeRef={nodeRef}
-      position={pos}
+      position={{x: node.x, y: node.y}}
       axis="x"
       onDrag={handleDrag}
       grid={[YARD_WIDTH, YARD_WIDTH]} 

@@ -25,7 +25,8 @@ function Field() {
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (game_state.ball_on_yard !== undefined) {
+    console.log("Use Effect Ran")
+    if (!initialized && game_state.ball_on_yard !== undefined) {
       dispatch(setDefault({
         ballOnYard: game_state.ball_on_yard,
         yardWidth: YARD_WIDTH,

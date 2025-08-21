@@ -11,7 +11,7 @@ const gameSlice = createSlice({
       away_score: 8,
       home_timeouts: 3,
       away_timeouts: 3,
-      quarter: 1,
+      quarter: 5,
       down: 1,
       distance: 10,
       ball_on_yard: 25,

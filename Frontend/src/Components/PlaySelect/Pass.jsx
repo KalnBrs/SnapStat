@@ -5,7 +5,8 @@ import './PlaySelect.css'
 import Button from './Button'
 import { useDispatch, useSelector } from 'react-redux'
 import { setPenalty, setReturn } from '../../Features/game/gameSlice'
-import { sendPass, calculateNextDownAndDistance } from '../../Scripts/sendPass'
+import { sendPass, calculateNextDownAndDistance, runPass } from '../../Scripts/sendPass'
+import { setError } from '../../Features/error/errorSlice'
 
 const retTypes = [ { 
     label: "Fumble", 
@@ -45,11 +46,21 @@ function Pass({setFunc}) {
   const currentDown = useSelector(state => state.game.game.down)
   const currentDistance = useSelector(state => state.game.game.distance)
 
+  function setDefault() {
+    dispatch(setReturn(false))
+    dispatch(setPenalty(false))
+  }
+
   function generatePassPlay() {
     const startYard = (nodes.Start.x - 50) / 10;
-    const endYardPass = (nodes.End.x - 50) / 10;
+    const endYardPass = !retCondition ? (nodes.End.x - 50) / 10 : (retNodes.End.x - 50) / 10;
     const penaltyYards = penCondition ? ((penNodes.End.x - 50) - (penNodes.Start.x - 50)) / 10 : 0;
     const endYardFinal = endYardPass + penaltyYards;
+
+    if (!(qbSelect && wrSelect) || qbSelect?.player_id == wrSelect?.player_id) {
+      dispatch(setError({show: true, message: "Please Select Different QB and WR"}))
+      return
+    }
 
     // Initialize players array
     const players = [
@@ -106,17 +117,19 @@ function Pass({setFunc}) {
         currentDistance,
         startYard,
         endYardFinal,
+        incomplete,
         retCondition && !defenseScore, // turnover flag (excluding defensive TD)
         touchdown,
         touchback,
-        defenseScore
+        defenseScore,
+        autoFirst
     );
 
     return {
         type: "pass",
         result,
         play_end: endYardPass,
-        end_yard: endYardFinal,
+        end_yard: !incomplete ? endYardFinal : startYard,
         down_to: nextPlay.down_to,
         distance_to: nextPlay.distance_to,
         ball_on_yard: nextPlay.ball_on_yard,
@@ -148,7 +161,7 @@ function Pass({setFunc}) {
             <Button label={'Incomplete'} onClick={() => {setIncomplete(!incomplete); dispatch(setReturn(false))}} isActive={incomplete} width={200} margin={0} />
             <Button label={'Turnover'} onClick={() => {setIncomplete(false); dispatch(setReturn(!retCondition))}} isActive={retCondition} width={200} margin={0} />
             <Button label={'Penalty'} onClick={() => {dispatch(setPenalty(!penCondition)); setAutoFirst(false)}} isActive={penCondition} width={100} margin={0} />
-            {penCondition && <Button show={penCondition} label={'Auto First Down'} onClick={() => setAutoFirst(true)} isActive={autoFirst} width={150} margin={0} />}
+            {penCondition && <Button show={penCondition} label={'Auto First Down'} onClick={() => setAutoFirst(!autoFirst)} isActive={autoFirst} width={150} margin={0} />}
             
 
             { retCondition &&
@@ -165,7 +178,7 @@ function Pass({setFunc}) {
         </div>
         <div className='flex flex-row my-5'>
           {!incomplete && !retCondition && <>
-          <p className='self-center font-bold mx-3'>Tackler: </p>
+          <p className='self-center font-bold mx-3'>Tackler (None if Out-of-Bounds): </p>
           <DropDown options={oppOption.map(obj => ({
             ...obj,
             label: `#${obj.number} - ${obj.name}`,
@@ -200,7 +213,7 @@ function Pass({setFunc}) {
         </div>
       </div>
       <div className='justify-center'>
-        <Button label={'Submit'} show={true} onClick={() => {console.log(generatePassPlay()); setFunc('')}} />
+        <Button label={'Submit'} show={true} onClick={() => {runPass(generatePassPlay()); setDefault(); setFunc('')}} />
       </div>
     </>
   )

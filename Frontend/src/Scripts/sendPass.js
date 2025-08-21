@@ -1,7 +1,11 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setGame } from "../Features/game/gameSlice";
+import store from "../Store/store";
+import { setDefenseNode, setOffenseNode, setPenaltyNode } from "../Features/node/nodeSlice";
 
-async function sendPass(end_yard, result, down_to, distance_to, players, type) {
-  const gameState = useSelector(state => state.game.game)
+async function sendPass(play_end, end_yard, result, down_to, distance_to, players, type) {
+  const gameState = store.getState().game.game
+  /** 
   const response = await fetch(`http://localhost:8000/api/games/${gameState.game_id}/plays`, {
     method: "Post",
     headers: {
@@ -11,7 +15,7 @@ async function sendPass(end_yard, result, down_to, distance_to, players, type) {
     body: JSON.stringify({
         "play_type": type, // Could be pass or defense depending on touchdown or not
         "start_yard": gameState.ball_on_yard,
-        "end_yard": end_yard,
+        "end_yard": play_end,
         "down": down_to, 
         "distance": distance_to,
         "ball_on": end_yard,
@@ -20,8 +24,55 @@ async function sendPass(end_yard, result, down_to, distance_to, players, type) {
         "players": players
       })
     })
+  */
+
+  const response = { game: {
+    game_id: 2,
+    home_team_id: 1,
+    away_team_id: 2,
+    home_score: 0,
+    away_score: 8,
+    home_timeouts: 3,
+    away_timeouts: 3,
+    quarter: 1,
+    down: down_to,
+    distance: distance_to,
+    ball_on_yard: end_yard,
+    possession_team_id: 1,
+    current_drive_id: 6
+  }}
 
   return response
+}
+
+async function runPass(res) {
+  const state = store.getState()
+  const game = state.game.game
+  const offensiveNode = state.node.offenseNode
+  const deffensiveNode = state.node.defenseNode
+  const penaltyNode = state.node.penaltyNode
+
+  const { type, result, play_end, end_yard, down_to, distance_to, ball_on_yard, players} = res
+  const response = await sendPass(play_end, end_yard, result, down_to, distance_to, players, type)
+  console.log(game)
+  store.dispatch(setGame({
+    ...game,
+    home_score: response.game.home_score, 
+    away_score: response.game.away_score,
+    down: response.game.down,
+    distance: response.game.distance,
+    ball_on_yard: response.game.ball_on_yard,
+  }))
+  console.log(end_yard)
+  const end_px_start = (end_yard + 5) * 10
+  const end_px_end = (end_yard + 10) * 10
+
+  store.dispatch(setOffenseNode({id: "Start", x: end_px_start, y: offensiveNode.Start.y }))
+  store.dispatch(setOffenseNode({id: "End", x: end_px_end, y: offensiveNode.End.y }))
+  store.dispatch(setDefenseNode({id: "Start", x: end_px_start, y: deffensiveNode.Start.y}))
+  store.dispatch(setDefenseNode({id: "End", x: end_px_end, y: deffensiveNode.End.y}))
+  store.dispatch(setPenaltyNode({id: "Start", x: end_px_start, y: penaltyNode.Start.y}))
+  store.dispatch(setPenaltyNode({id: "End", x: end_px_end, y: penaltyNode.End.y}))
 }
 
 // Calculates the next down, distance, and ball position after a pass play
@@ -30,12 +81,20 @@ function calculateNextDownAndDistance(
   currentDistance,
   startYard,
   endYard,
+  incomplete = false,
   turnover = false,
   touchdown = false,
   touchback = false,
-  defenseScore = false
+  defenseScore = false,
+  autoFirst = false,
 ) {
   let down_to, distance_to, ball_on_yard;
+
+  if (incomplete) {
+    down_to = currentDown += 1
+    distance_to = currentDistance
+    return { down_to, distance_to, startYard };
+  }
 
   // 1. Defensive touchdown
   if (defenseScore) {
@@ -95,4 +154,4 @@ function calculateNextDownAndDistance(
 }
 
 
-export { sendPass, calculateNextDownAndDistance }
+export { sendPass, runPass, calculateNextDownAndDistance }
