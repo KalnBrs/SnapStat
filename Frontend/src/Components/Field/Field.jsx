@@ -5,6 +5,7 @@ import PlayerNode from '../PlayerNode';
 import './Field.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { setDefault, setOffenseNode, setDefenseNode } from '../../Features/node/nodeSlice';
+import { setGame } from '../../Features/game/gameSlice';
 
 const YARD_WIDTH = 10;  // 10px per yard
 const ENDZONE_WIDTH = 50; // 5% of field width = 50px
@@ -20,11 +21,29 @@ function Field() {
 
   const homeColor = useSelector(state => state.team.home.color)
   const awayColor = useSelector(state => state.team.away.color)
+  const team = useSelector(state => state.team)
   const dispatch = useDispatch()
 
   const [initialized, setInitialized] = useState(false);
 
-  useEffect(() => {
+  useEffect( () => {
+    const fetchSetData = async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/api/games/2`, {
+          method: "GET",
+          headers: {
+            "Authorization": "Bearer <Token>",
+          }
+        })
+        if (!res.ok) throw new Error("Failed to fetch game");
+        const data = await res.json();
+        dispatch(setGame(data));
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchSetData();
+
     console.log("Use Effect Ran")
     if (!initialized && game_state.ball_on_yard !== undefined) {
       dispatch(setDefault({
@@ -49,14 +68,14 @@ function Field() {
             className="first-down-line"
             style={{ left: `${(game_state.ball_on_yard + game_state.distance) * YARD_WIDTH + ENDZONE_WIDTH}px` }}
           />
-          {initialized && Object.entries(nodes).map(([id, node]) => (
-            <PlayerNode key={id} type={"off"} node={node} id={id} color={homeColor} />
-          ))}
-          {retCondition && initialized && Object.entries(retNodes).map(([id, node]) => (
-            <PlayerNode key={id} type={"def"} node={node} id={id} color={awayColor} />
-          ))}
+          {initialized && Object.entries(nodes).map(([id, node]) => {
+            return <PlayerNode key={id} type={"off"} node={node} id={id} pos_team_id={game_state.possession_team_id} />
+          })}
+          {retCondition && initialized && Object.entries(retNodes).map(([id, node]) => {
+            return <PlayerNode key={id} type={"def"} node={node} id={id} pos_team_id={game_state.possession_team_id} />
+          })}
           {penCondition && initialized && Object.entries(penNodes).map(([id, node]) => (
-            <PlayerNode key={id} type={"pen"} node={node} id={id} color={'yellow'} />
+            <PlayerNode key={id} type={"pen"} node={node} id={id}  pos_team_id={game_state.possession_team_id}/>
           ))}
         </EndzonesField>
       </div>

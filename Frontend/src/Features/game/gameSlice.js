@@ -5,18 +5,18 @@ const gameSlice = createSlice({
   initialState: {
     game: {
       game_id: 2,
-      home_team_id: 1,
-      away_team_id: 2,
+      home_team_id: null,
+      away_team_id: null,
       home_score: 0,
-      away_score: 8,
+      away_score: 0,
       home_timeouts: 3,
       away_timeouts: 3,
-      quarter: 5,
+      quarter: 1,
       down: 1,
       distance: 10,
-      ball_on_yard: 25,
-      possession_team_id: 1,
-      current_drive_id: 6
+      ball_on_yard: 50,
+      possession_team_id: null,
+      current_drive_id: null
     },
     offense: "home",
     return: false,

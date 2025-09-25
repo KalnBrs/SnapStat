@@ -5,7 +5,7 @@ import './PlaySelect.css'
 import Button from './Button'
 import { useDispatch, useSelector } from 'react-redux'
 import { setPenalty, setReturn } from '../../Features/game/gameSlice'
-import { sendPass, calculateNextDownAndDistance, runPass } from '../../Scripts/sendPass'
+import { sendPass, calculateNextDownAndDistancePass, runPass } from '../../Scripts/sendPass'
 import { setError } from '../../Features/error/errorSlice'
 
 const retTypes = [ { 
@@ -53,89 +53,131 @@ function Pass({setFunc}) {
 
   function generatePassPlay() {
     const startYard = (nodes.Start.x - 50) / 10;
-    const endYardPass = !retCondition ? (nodes.End.x - 50) / 10 : (retNodes.End.x - 50) / 10;
-    const penaltyYards = penCondition ? ((penNodes.End.x - 50) - (penNodes.Start.x - 50)) / 10 : 0;
-    const endYardFinal = endYardPass + penaltyYards;
-
-    if (!(qbSelect && wrSelect) || qbSelect?.player_id == wrSelect?.player_id) {
-      dispatch(setError({show: true, message: "Please Select Different QB and WR"}))
-      return
+    let endYardPass = !retCondition 
+      ? (nodes.End.x - 50) / 10 
+      : (retNodes.End.x - 50) / 10;
+  
+    const playYards = endYardPass - startYard;
+    const penaltyYards = penCondition 
+      ? ((penNodes.End.x - 50) - (penNodes.Start.x - 50)) / 10 
+      : 0;
+  
+    let endYardFinal = endYardPass;
+  
+    if (!(qbSelect && wrSelect) || qbSelect?.player_id === wrSelect?.player_id) {
+      dispatch(setError({ show: true, message: "Please Select Different QB and WR" }));
+      return null;
     }
-
-    // Initialize players array
+  
+    // --- Build players array ---
     const players = [
-        { player_id: qbSelect.player_id, role: "passer", value: endYardPass - startYard },
-        { player_id: wrSelect.player_id, role: "receiver", value: endYardPass - startYard }
+      { player_id: qbSelect.player_id, role: "passer", value: incomplete ? 0 : playYards },
     ];
-
-    // Tackler (if completion or return occurs)
+    if (!incomplete) {
+      players.push({ player_id: wrSelect.player_id, role: "receiver", value: playYards });
+    }
     if (!incomplete && tackSelect) {
-        players.push({ player_id: tackSelect.player_id, role: "tackler", value: 1 });
+      players.push({ player_id: tackSelect.player_id, role: "tackler", value: 1 });
     }
-
-    // Turnover stats
-    if (retCondition && retType === "Interception" && intercepter) {
-        players.push({ player_id: intercepter.player_id, role: "interceptor", value: 1 });
+    if (retCondition && retType?.value === "interception" && intercepter) {
+      players.push({ player_id: intercepter.player_id, role: "interceptor", value: 1 });
     }
-    if (retCondition && retType === "Fumble" && fumbleRecoverer) {
-        players.push({ player_id: fumbleRecoverer.player_id, role: "fumble_recoverer", value: 1 });
+    if (retCondition && retType?.value === "fumble" && fumbleRecoverer) {
+      players.push({ player_id: fumbleRecoverer.player_id, role: "fumble_recoverer", value: 1 });
     }
-
-    // Determine result
-    let result;
+  
+    // --- Determine result ---
+    let result = "";
+    let playType = "pass";
     let touchdown = false;
     let defenseScore = false;
     let touchback = false;
-
-    // Offensive touchdown
-    if (!incomplete && !retCondition && endYardFinal >= 100) {
-        result = "Touchdown";
-        touchdown = true;
+    let safety = false;
+  
+    // 1. Incomplete
+    if (incomplete) {
+      result = "Incomplete";
+      endYardFinal = startYard;
     }
-    // Defensive score
-    else if (retCondition && (retType === "Interception" || retType === "Fumble") && (retNodes.End.x - 50)/10 >= 100) {
-        defenseScore = true;
-        if (retType === "Interception") result = "Pick-Six";
-        else result = "Scoop and Score";
+    // 2. Offensive TD
+    else if (!retCondition && endYardFinal >= 100) {
+      result = "Touchdown";
+      playType = "pass";
+      touchdown = true;
+      endYardFinal = 97;
     }
-    // Regular turnover (no TD)
-    else if (retCondition && retType === "Interception") result = "Interception";
-    else if (retCondition && retType === "Fumble") result = "Fumble";
-    // Incomplete
-    else if (incomplete) result = "Incomplete";
-    // Normal completion
-    else result = "Completion";
-
-    // Touchback check (if defensive return ends in end zone)
-    if (retCondition && (retType === "Interception" || retType === "Fumble") && (retNodes.End.x - 50)/10 === 0) {
-        touchback = true;
+    // 3. Defensive TD
+    else if (
+      retCondition &&
+      (retType?.value === "interception" || retType?.value === "fumble") &&
+      (retNodes.End.x - 50) / 10 <= 0
+    ) {
+      result = retType?.value === "interception" ? "Pick-Six" : "Scoop and Score";
+      playType = "defense";
+      defenseScore = true;
+      endYardFinal = 97;
     }
-
-    // Determine next play setup
-    const nextPlay = calculateNextDownAndDistance(
-        currentDown,
-        currentDistance,
-        startYard,
-        endYardFinal,
-        incomplete,
-        retCondition && !defenseScore, // turnover flag (excluding defensive TD)
-        touchdown,
-        touchback,
-        defenseScore,
-        autoFirst
+    // 5. Touchback (after turnover or deep completion)
+    else if (
+      retCondition &&
+      (retNodes.End.x - 50) / 10 >= 100 &&
+      (retNodes.Start.x - 50) / 10 >= 100
+    ) {
+      result = "Touchback";
+      touchback = true;
+      endYardFinal = 25;
+    }
+    // 4. Turnovers (non-scoring)
+    else if (retCondition && retType?.value === "interception") {
+      result = "Interception";
+      endYardFinal = (retNodes.End.x - 50) / 10
+    } else if (retCondition && retType?.value === "fumble") {
+      result = "Fumble";
+      endYardFinal = (retNodes.End.x - 50) / 10
+    }
+    // 6. Safety (QB sacked in own endzone or turnover return ends there)
+    else if (endYardFinal <= 0 && !touchdown && !defenseScore) {
+      result = "Safety";
+      playType = "defense";
+      safety = true;
+      endYardFinal = 20; // after safety kickoff spot
+    }
+    // 7. Normal completion
+    else {
+      result = "Completion";
+    }
+  
+    // --- Calculate next play state ---
+    const nextPlay = calculateNextDownAndDistancePass(
+      currentDown,
+      currentDistance,
+      startYard,
+      endYardFinal,
+      incomplete,
+      retCondition && !defenseScore, // turnover flag (excluding defensive TD)
+      touchdown,
+      touchback,
+      defenseScore,
+      autoFirst,
+      safety,
+      penCondition,
+      penaltyYards
     );
 
+    console.log(nextPlay)
+  
     return {
-        type: "pass",
-        result,
-        play_end: endYardPass,
-        end_yard: !incomplete ? endYardFinal : startYard,
-        down_to: nextPlay.down_to,
-        distance_to: nextPlay.distance_to,
-        ball_on_yard: nextPlay.ball_on_yard,
-        players
+      type: playType,
+      result,
+      play_end: endYardPass,
+      end_yard: endYardFinal,
+      down_to: nextPlay.down_to,
+      distance_to: nextPlay.distance_to,
+      ball_on_yard: nextPlay.ball_on_yard,
+      players,
+      isTurnover: nextPlay.isTurnover
     };
-}
+  }  
 
   return (
     <>
@@ -213,7 +255,13 @@ function Pass({setFunc}) {
         </div>
       </div>
       <div className='justify-center'>
-        <Button label={'Submit'} show={true} onClick={() => {runPass(generatePassPlay()); setDefault(); setFunc('')}} />
+      <Button label={'Submit'} show={true} onClick={() => {
+        const play = generatePassPlay();
+        if (!play) return;
+        runPass(play);
+        setDefault();
+        setFunc('');
+      }} />
       </div>
     </>
   )

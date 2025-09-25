@@ -40,14 +40,32 @@ const nodeSlice = createSlice({
     },
     setOffenseNode: (state, action) => {
       const { id, x, y } = action.payload;
+      const node = state.offenseNode[id]
+
+      if (node && node.x === x && node.y === y) {
+        return
+      }
+
       state.offenseNode[id] = { x, y };
     },
     setDefenseNode: (state, action) => {
       const { id, x, y } = action.payload;
+      const node = state.defenseNode[id]
+
+      if (node && node.x === x && node.y === y) {
+        return
+      }
+
       state.defenseNode[id] = { x, y };
     },
     setPenaltyNode: (state, action) => {
       const { id, x, y } = action.payload;
+      const node = state.penaltyNode[id]
+
+      if (node && node.x === x && node.y === y) {
+        return
+      }
+
       state.penaltyNode[id] = { x, y };
     },
   }

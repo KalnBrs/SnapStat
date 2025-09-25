@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import Pass from './Pass';
 import Button from './Button';
-import Rush from './rush';
+import Rush from './Rush';
 import { useDispatch } from 'react-redux';
 import { setPenalty, setReturn } from '../../Features/game/gameSlice';
 import Kick from './Kick';

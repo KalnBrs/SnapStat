@@ -7,9 +7,29 @@ import { setDefenseNode, setOffenseNode, setPenaltyNode } from '../../Features/n
 const ENDZONE_WIDTH = 50;
 const YARD_WIDTH = 10;
 
-const PlayerNode = ({ type, id, color, node }) => {
+const PlayerNode = ({ type, id, node, pos_team_id }) => {
   const nodeRef = useRef(null); 
   const dispatch = useDispatch()
+  const team = useSelector(state => state.team)
+  let color = team.home.team_id == pos_team_id ? team.home.color : team.away.color
+  if (type == "pen") {
+    color = "yellow"
+  }
+  else if (type == "off") {
+    if (team.home.team_id == pos_team_id) {
+      color = team.home.color
+    } else {
+      color = team.away.color
+    }
+  } else {
+    if (team.home.team_id == pos_team_id) {
+      color = team.away.color
+    } else {
+      color = team.home.color
+    }
+  }
+  // if type is off + home team and possesion id same : home 
+  // if type is def + home team and possesion id same : away 
 
   const nodeFunc = type === "off" ? setOffenseNode : type === "def" ? setDefenseNode : setPenaltyNode
 

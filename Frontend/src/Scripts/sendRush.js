@@ -1,4 +1,3 @@
-// Scripts/sendPass.js (replace existing)
 import { setGame } from "../Features/game/gameSlice";
 import { yardToPx } from "./utilities";
 import store from "../Store/store";
@@ -9,10 +8,9 @@ import {
 } from "../Features/node/nodeSlice";
 
 /**
- * Single API call to persist a pass play.
- * Accepts the payload in your existing shape.
+ * sendRush — sends play to backend (or mocked if API off)
  */
-async function sendPass({
+async function sendRush({
   play_type,
   result,
   start_yard,
@@ -25,7 +23,6 @@ async function sendPass({
   isTurnover
 }) {
   const gameState = store.getState().game.game;
-
   const response = await fetch(`http://localhost:8000/api/games/${gameState.game_id}/plays`, {
     method: "POST",
     headers: {
@@ -49,16 +46,10 @@ async function sendPass({
 }
 
 /**
- * runPass: accept the play object returned from generatePassPlay()
- * - sends to backend
- * - updates local game slice
- * - updates field nodes (Start = ball_on_yard, End = ball_on_yard + distance)
+ * runRush — updates Redux after sending play
  */
-async function runPass(res) {
-  if (!res) {
-    console.warn("runPass called with null/undefined play result.");
-    return;
-  }
+async function runRush(res) {
+  if (!res) return;
 
   const state = store.getState();
   const game = state.game.game;
@@ -88,9 +79,8 @@ async function runPass(res) {
     return;
   }
 
-  console.log("Possesion ID: " + game.possession_team_id)
-  // Send single API call
-  const response = await sendPass({
+  // Call API
+  const response = await sendRush({
     play_type: type,
     result,
     start_yard: game.ball_on_yard,
@@ -108,7 +98,7 @@ async function runPass(res) {
     return;
   }
 
-  // Update authoritative game slice
+  // Update game state
   store.dispatch(
     setGame({
       ...game,
@@ -117,55 +107,43 @@ async function runPass(res) {
       down: response.game.down,
       distance: response.game.distance,
       ball_on_yard: response.game.ball_on_yard,
-      possession_team_id: response.game.possession_team_id,
+      possession_team_id: response.game.possession_team_id ?? game.possession_team_id,
     })
   );
 
-  // Use yardToPx helper and use distance from response to create the End node (first-down)
-  console.log("run data: " + response.game.distance + " " + distance_to)
+  // Reset field nodes
   const ballY = response.game.ball_on_yard;
-  const toGo = Number(response.game.distance) || distance_to || 10;
+  const toGo = response.game.distance;
 
   const startPx = yardToPx(ballY);
-  const endPx = yardToPx(Math.min(100, Math.max(0, ballY + toGo))); // clamp between 0 and 100
+  const endPx = yardToPx(Math.min(100, Math.max(0, ballY + toGo)));
 
-  // Defensive guards for node Y positions (fallback to 0 if missing)
-  const offStartY = offensiveNode?.Start?.y ?? 0;
-  const offEndY = offensiveNode?.End?.y ?? 0;
-  const defStartY = defensiveNode?.Start?.y ?? 0;
-  const defEndY = defensiveNode?.End?.y ?? 0;
-  const penStartY = penaltyNode?.Start?.y ?? 0;
-  const penEndY = penaltyNode?.End?.y ?? 0;
-
-  // Dispatch node updates
-  store.dispatch(setOffenseNode({ id: "Start", x: startPx, y: offStartY }));
-  store.dispatch(setOffenseNode({ id: "End", x: endPx, y: offEndY }));
-  store.dispatch(setDefenseNode({ id: "Start", x: startPx, y: defStartY }));
-  store.dispatch(setDefenseNode({ id: "End", x: endPx, y: defEndY }));
-  store.dispatch(setPenaltyNode({ id: "Start", x: startPx, y: penStartY }));
-  store.dispatch(setPenaltyNode({ id: "End", x: endPx, y: penEndY }));
+  store.dispatch(setOffenseNode({ id: "Start", x: startPx, y: offensiveNode?.Start?.y ?? 0 }));
+  store.dispatch(setOffenseNode({ id: "End", x: endPx, y: offensiveNode?.End?.y ?? 0 }));
+  store.dispatch(setDefenseNode({ id: "Start", x: startPx, y: defensiveNode?.Start?.y ?? 0 }));
+  store.dispatch(setDefenseNode({ id: "End", x: endPx, y: defensiveNode?.End?.y ?? 0 }));
+  store.dispatch(setPenaltyNode({ id: "Start", x: startPx, y: penaltyNode?.Start?.y ?? 0 }));
+  store.dispatch(setPenaltyNode({ id: "End", x: endPx, y: penaltyNode?.End?.y ?? 0 }));
 }
 
 /**
- * calculateNextDownAndDistancePass remains positional (as you call it).
- * Keep this implementation external if you like — but ensure callers pass numbers.
+ * calculateNextDownAndDistanceRush
  */
-function calculateNextDownAndDistancePass(
+function calculateNextDownAndDistanceRush(
   currentDown,
   currentDistance,
   startYard,
   endYard,
-  incomplete = false,
   turnover = false,
   touchdown = false,
   touchback = false,
   defenseScore = false,
   autoFirst = false,
-  safety = false,
   penCondition = false,
-  penaltyYards = 0
+  penaltyYards = 0,
+  safety = false
 ) {
-  console.log(turnover, incomplete, touchdown, touchback, defenseScore, autoFirst, safety, penCondition)
+  console.log(turnover, touchdown, touchback, defenseScore, autoFirst, safety, penCondition)
   console.log("currentDown: " + currentDown)
   console.log("currentDistance: " + currentDistance)
   console.log("startYard: " + startYard)
@@ -173,15 +151,15 @@ function calculateNextDownAndDistancePass(
 
   let down_to = currentDown;
   let distance_to = currentDistance;
-  let ball_on_yard = endYard; // default to end of play
+  let ball_on_yard = endYard;
 
-  // 8. Apply penalty if applicable
+  // Penalty check
   if (penCondition && penaltyYards !== 0) {
-    let newBall = 0;
+    let newBall = 0
     let newDistance = 0;
     if (penaltyYards < 0) {
       console.log("run2")
-      newBall = Math.min(100, Math.max(0, startYard + penaltyYards));
+      ball_on_yard = Math.min(100, Math.max(0, startYard + penaltyYards));
 
       // Adjust distance: line-to-gain changes by penalty
       newDistance = currentDistance - penaltyYards;
@@ -197,38 +175,20 @@ function calculateNextDownAndDistancePass(
       if (newDistance < 1) newDistance = 1; // min distance is 1 yard
     }
 
-    return { down_to, distance_to: newDistance, ball_on_yard: newBall, isTurnover: false };
+    return { down_to, distance_to: newDistance, ball_on_yard, isTurnover: false };
   }
 
-  // 1. Incomplete pass → ball stays at line of scrimmage
-  if (incomplete) {
-    if (down_to > 4) {
-      return { down_to: 1, distance_to: 10, ball_on_yard: 100 - endYard, isTurnover: true };
-    }
-    return { down_to: currentDown + 1, distance_to: currentDistance, ball_on_yard: startYard };
-  }
-
-  // 2. Defensive touchdown → kickoff
-  if (defenseScore) return { down_to: 1, distance_to: 10, ball_on_yard: 35, isTurnover: true };
-
-  // 3. Touchback
+  if (defenseScore) return { down_to: 1, distance_to: 10, ball_on_yard: 97, isTurnover: true };
   if (touchback) return { down_to: 1, distance_to: 10, ball_on_yard: 25, isTurnover: true };
-
-  // 4. Offensive touchdown → kickoff
   if (touchdown) return { down_to: 1, distance_to: 3, ball_on_yard: 97, isTurnover: false };
-
-  // 5. Safety → free kick
-  if (safety) return { down_to: 1, distance_to: 10, ball_on_yard: 20, isTurnover: false };
-  // 6. Interception or fumble (non-scoring) → other team takes over
   if (turnover) return { down_to: 1, distance_to: 10, ball_on_yard: 100 - endYard, isTurnover: true };
+  if (safety) return { down_to: 1, distance_to: 10, ball_on_yard: 20, isTurnover: false };
 
-  // 7. Normal completion / progress
+
   const yardsGained = endYard - startYard;
   const yardsRemaining = currentDistance - yardsGained;
 
-
   if (yardsRemaining <= 0 || autoFirst) {
-    // First down achieved
     down_to = 1;
     distance_to = endYard >= 90 ? 100 - endYard : 10;
     ball_on_yard = endYard;
@@ -237,7 +197,6 @@ function calculateNextDownAndDistancePass(
     distance_to = yardsRemaining;
     ball_on_yard = endYard;
 
-    // Turnover on downs
     if (down_to > 4) {
       return { down_to: 1, distance_to: 10, ball_on_yard: 100 - endYard, isTurnover: true };
     }
@@ -246,5 +205,4 @@ function calculateNextDownAndDistancePass(
   return { down_to, distance_to, ball_on_yard, isTurnover: false };
 }
 
-
-export { sendPass, runPass, calculateNextDownAndDistancePass };
+export { sendRush, runRush, calculateNextDownAndDistanceRush };

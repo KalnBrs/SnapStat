@@ -98,7 +98,7 @@ const getMe = async (req, res) => {
 }
 
 function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' })
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '3h' })
 }
 
 module.exports = { authenticateToken, login, logout, register, refresh, getMe }

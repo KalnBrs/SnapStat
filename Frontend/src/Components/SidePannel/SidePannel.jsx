@@ -36,7 +36,7 @@ function SidePannel() {
   const handleQuarterConfirm = () => { 
     dispatch(setGame({
       ...gameState,
-      quarter: selectedValue
+      quarter: selectedValue || 1
     }))
     setShowQuarter(false) 
   }
@@ -82,7 +82,7 @@ function SidePannel() {
       <p className='topic'>Down & Distance:</p>
       <p>{`${gameState.down + prefix[gameState.down]} & ${gameState.distance}`}</p>
       <div className='break' />
-      <label className='topic pb-2' htmlFor="my-select">Choose an option:</label>
+      <label className='topic pb-2' htmlFor="my-select">Choose a Quarter:</label>
       <select className='quarterSelect' id="my-select" value={selectedValue} onChange={handleChange}>
         <option value="1">1st</option>
         <option value="2">2nd</option>

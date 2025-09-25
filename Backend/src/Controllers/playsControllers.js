@@ -14,7 +14,7 @@ const points = {
   "Extra Point Made": 1
 }
 
-const defTurnovers = ["In", "fumble"]
+const defTurnovers = ["Interception", "Fumble", "Fumble",]
 
 const getAllPlays = async (req, res) => {
   try {
@@ -29,20 +29,26 @@ const getAllPlays = async (req, res) => {
 const submitPlay = async (req, res) => {
   try {
     const client = await pool.connect()
-    const { play_type, start_yard, end_yard, down, distance, ball_on, result, possession_team_id, players } = req.body
+    const { play_type, start_yard, end_yard, down, distance, ball_on, result, possession_team_id, players, isTurnover } = req.body
     const isScoreHome = possession_team_id === req.game.home_team_id && !defTurnovers.includes(result)
-    const side_score = isScoreHome ? "home_score": "away_score"
+    let side_score = isScoreHome ? "home_score" : "away_score"
     let score_add = 0
+    let newPossessionId = possession_team_id
     if (result in points) score_add = points[result]
-    
+    if (isTurnover) { newPossessionId = possession_team_id == req.game.home_team_id ? req.game.away_team_id : req.game.home_team_id }
+    if (result === "Safety") {
+      score_add = 2;
+      side_score = side_score == "home_score" ? "away_score" : "home_score"
+    }
+
     await client.query('BEGIN')
     const play = await client.query(
-      'INSERT INTO plays (drive_id, game_id, team_id, down, distance, start_yard, end_yard,  play_type, result, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, now()::timestamp) RETURNING *;', 
+      'INSERT INTO plays (drive_id, game_id, team_id, down, distance, start_yard, end_yard,  play_type, result, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, now()::timestamp) RETURNING *;',
       [req.game.current_drive_id, req.game.game_id, possession_team_id, down, distance, start_yard, end_yard, play_type, result])
 
-    const game = await client.query(`UPDATE games SET ${side_score} = ${side_score} + $1, down = $2, distance = $3, ball_on_yard = $4 WHERE game_id = $5 RETURNING *;`, [ score_add, down, distance, ball_on, req.game.game_id])
+    const game = await client.query(`UPDATE games SET ${side_score} = ${side_score} + $1, down = $2, distance = $3, ball_on_yard = $4, possession_team_id = $5 WHERE game_id = $6 RETURNING *;`, [score_add, down, distance, ball_on, newPossessionId, req.game.game_id])
 
-    const updatesByPlayer = applyStatRules({ play_type, result, players})
+    const updatesByPlayer = applyStatRules({ play_type, result, players })
     for (const [playerId, updates] of Object.entries(updatesByPlayer)) {
       const { text, values } = buildStatSQL(playerId, req.game.game_id, updates);
       await client.query(text, values);
@@ -51,6 +57,7 @@ const submitPlay = async (req, res) => {
     await client.query('COMMIT;')
     res.json({ game: game.rows[0], play: play.rows[0] })
   } catch (err) {
+    console.log(err.message)
     res.sendStatus(500)
   }
 }
@@ -78,4 +85,4 @@ function buildStatSQL(player_id, game_id, updates) {
   return { text: sql, values };
 }
 
-module.exports = {getAllPlays, submitPlay}
+module.exports = { getAllPlays, submitPlay }
