@@ -8,7 +8,8 @@ const points = {
   "Blocked punt TD": 6,
   "Blocked kick TD": 6,
   "Field Goal Made": 3,
-  "safety": 2,
+  "Safety": 2,
+  "Def Safety": 2,
   "2pt_made": 2,
   "Blocked extra TD": 2,
   "Extra Point Made": 1
@@ -29,16 +30,18 @@ const getAllPlays = async (req, res) => {
 const submitPlay = async (req, res) => {
   try {
     const client = await pool.connect()
-    const { play_type, start_yard, end_yard, down, distance, ball_on, result, possession_team_id, players, isTurnover } = req.body
+    const { play_type, start_yard, end_yard, down, distance, ball_on, result, possession_team_id, players, isTurnover, defSafety } = req.body
     const isScoreHome = possession_team_id === req.game.home_team_id && !defTurnovers.includes(result)
     let side_score = isScoreHome ? "home_score" : "away_score"
     let score_add = 0
     let newPossessionId = possession_team_id
     if (result in points) score_add = points[result]
     if (isTurnover) { newPossessionId = possession_team_id == req.game.home_team_id ? req.game.away_team_id : req.game.home_team_id }
-    if (result === "Safety") {
-      score_add = 2;
-      side_score = side_score == "home_score" ? "away_score" : "home_score"
+    console.log(req.body)
+    if (result === "Safety" || result === "Def Safety") {
+      if (!defSafety) {
+        side_score = side_score == "home_score" ? "away_score" : "home_score"
+      }
     }
 
     await client.query('BEGIN')

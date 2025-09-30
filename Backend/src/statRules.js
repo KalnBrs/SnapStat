@@ -79,7 +79,15 @@ const statRules = {
       fumble_recoverer: [
         { stat: 'fumble_recovery', value: 1 } 
       ]
-    }
+    },
+    "Def Safety": {
+        rusher: [
+          { stat: 'fumbles', value: 1 }
+        ],
+        fumble_recoverer: [
+          { stat: 'fumble_recovery', value: 1 } 
+        ]
+    },
   },
 // ---------------------------------------------------------------------------------------------------------------------------------------------
   sack: {

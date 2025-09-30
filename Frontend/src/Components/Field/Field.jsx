@@ -29,7 +29,7 @@ function Field() {
   useEffect( () => {
     const fetchSetData = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/games/2`, {
+        const res = await fetch(`http://localhost:8000/api/games/${game_state.game_id}`, {
           method: "GET",
           headers: {
             "Authorization": "Bearer <Token>",

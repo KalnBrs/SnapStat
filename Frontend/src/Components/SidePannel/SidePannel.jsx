@@ -6,6 +6,7 @@ import './SidePannel.css'
 import { useDispatch, useSelector } from 'react-redux';
 import { setGame } from '../../Features/game/gameSlice';
 import { setError } from '../../Features/error/errorSlice';
+import { updateQuarter, updateTimeout } from '../../Scripts/sideBarUtilities';
 
 const prefix = {
   1: 'st',
@@ -33,11 +34,11 @@ function SidePannel() {
 
   const handleQuarterOpen = () => { setShowQuarter(true) }
 
-  const handleQuarterConfirm = () => { 
-    dispatch(setGame({
-      ...gameState,
-      quarter: selectedValue || 1
-    }))
+  const handleQuarterConfirm = async () => { 
+    const backendGameState = await updateQuarter(selectedValue)
+    dispatch(setGame(
+      backendGameState
+    ))
     setShowQuarter(false) 
   }
 
@@ -49,16 +50,14 @@ function SidePannel() {
     setShowConfirmation(true)
   }
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (gameState[confirmationTeamValue] <= 0) {
       dispatch(setError({show: true, message: 'This team has reached 0 timeouts'}))
       handleClose()
       return
     }
-    dispatch(setGame({
-      ...gameState,
-      [confirmationTeamValue]: gameState[confirmationTeamValue] - 1
-    }))
+    const backendGameState = await updateTimeout(confirmationTeamValue, gameState[confirmationTeamValue] - 1)
+    dispatch(setGame(backendGameState))
     // Update Timeouts
     handleClose()
   }

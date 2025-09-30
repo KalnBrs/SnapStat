@@ -5,7 +5,7 @@ import './PlaySelect.css'
 import Button from './Button'
 import { useDispatch, useSelector } from 'react-redux'
 import { setPenalty, setReturn } from '../../Features/game/gameSlice'
-import { sendPass, calculateNextDownAndDistancePass, runPass } from '../../Scripts/sendPass'
+import { calculateNextDownAndDistancePass, runPass } from '../../Scripts/sendPass'
 import { setError } from '../../Features/error/errorSlice'
 
 const retTypes = [ { 
@@ -93,6 +93,7 @@ function Pass({setFunc}) {
     let defenseScore = false;
     let touchback = false;
     let safety = false;
+    let defSafety = false;
   
     // 1. Incomplete
     if (incomplete) {
@@ -116,6 +117,14 @@ function Pass({setFunc}) {
       playType = "defense";
       defenseScore = true;
       endYardFinal = 97;
+    }
+    // Def Safety
+    else if (retCondition && (retNodes.Start.x - 50) / 10 < 100 && (retNodes.End.x - 50) / 10 >= 100 && !touchdown && !defenseScore) {
+      console.log("Ran Def Saftey")
+      result = "Def Safety";
+      playType = "defense";
+      defSafety = true;
+      endYardFinal = 20;
     }
     // 5. Touchback (after turnover or deep completion)
     else if (
@@ -161,7 +170,8 @@ function Pass({setFunc}) {
       autoFirst,
       safety,
       penCondition,
-      penaltyYards
+      penaltyYards,
+      defSafety
     );
 
     console.log(nextPlay)
@@ -175,7 +185,8 @@ function Pass({setFunc}) {
       distance_to: nextPlay.distance_to,
       ball_on_yard: nextPlay.ball_on_yard,
       players,
-      isTurnover: nextPlay.isTurnover
+      isTurnover: nextPlay.isTurnover,
+      defSafety: defSafety,
     };
   }  
 

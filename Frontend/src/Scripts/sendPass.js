@@ -22,7 +22,8 @@ async function sendPass({
   ball_on,
   possession_team_id,
   players,
-  isTurnover
+  isTurnover,
+  defSafety
 }) {
   const gameState = store.getState().game.game;
 
@@ -42,7 +43,8 @@ async function sendPass({
       result,
       possession_team_id,
       players,
-      isTurnover
+      isTurnover,
+      defSafety
     }),
   });
   return await response.json();
@@ -75,7 +77,8 @@ async function runPass(res) {
     distance_to,
     ball_on_yard,
     players,
-    isTurnover
+    isTurnover,
+    defSafety
   } = res;
 
   // Defensive guard: ensure ball_on_yard and distance_to are numbers
@@ -100,7 +103,8 @@ async function runPass(res) {
     ball_on: ball_on_yard,
     possession_team_id: game.possession_team_id,
     players,
-    isTurnover
+    isTurnover,
+    defSafety
   });
 
   if (!response || !response.game) {
@@ -163,7 +167,8 @@ function calculateNextDownAndDistancePass(
   autoFirst = false,
   safety = false,
   penCondition = false,
-  penaltyYards = 0
+  penaltyYards = 0,
+  defSafety = false
 ) {
   console.log(turnover, incomplete, touchdown, touchback, defenseScore, autoFirst, safety, penCondition)
   console.log("currentDown: " + currentDown)
@@ -207,6 +212,8 @@ function calculateNextDownAndDistancePass(
     }
     return { down_to: currentDown + 1, distance_to: currentDistance, ball_on_yard: startYard };
   }
+
+  if (defSafety) return { down_to: 1, distance_to: 10, ball_on_yard: 20, isTurnover: true };
 
   // 2. Defensive touchdown → kickoff
   if (defenseScore) return { down_to: 1, distance_to: 10, ball_on_yard: 35, isTurnover: true };

@@ -20,7 +20,8 @@ async function sendRush({
   ball_on,
   possession_team_id,
   players,
-  isTurnover
+  isTurnover,
+  defSafety
 }) {
   const gameState = store.getState().game.game;
   const response = await fetch(`http://localhost:8000/api/games/${gameState.game_id}/plays`, {
@@ -39,7 +40,8 @@ async function sendRush({
       result,
       possession_team_id,
       players,
-      isTurnover
+      isTurnover,
+      defSafety
     }),
   });
   return await response.json();
@@ -66,7 +68,8 @@ async function runRush(res) {
     distance_to,
     ball_on_yard,
     players,
-    isTurnover
+    isTurnover,
+    defSafety
   } = res;
 
   // Defensive guard: ensure ball_on_yard and distance_to are numbers
@@ -90,7 +93,8 @@ async function runRush(res) {
     ball_on: ball_on_yard,
     possession_team_id: game.possession_team_id,
     players,
-    isTurnover
+    isTurnover,
+    defSafety
   });
 
   if (!response || !response.game) {
@@ -141,14 +145,9 @@ function calculateNextDownAndDistanceRush(
   autoFirst = false,
   penCondition = false,
   penaltyYards = 0,
-  safety = false
+  safety = false,
+  defSafety = false
 ) {
-  console.log(turnover, touchdown, touchback, defenseScore, autoFirst, safety, penCondition)
-  console.log("currentDown: " + currentDown)
-  console.log("currentDistance: " + currentDistance)
-  console.log("startYard: " + startYard)
-  console.log("endYard: " + endYard)
-
   let down_to = currentDown;
   let distance_to = currentDistance;
   let ball_on_yard = endYard;
@@ -158,26 +157,23 @@ function calculateNextDownAndDistanceRush(
     let newBall = 0
     let newDistance = 0;
     if (penaltyYards < 0) {
-      console.log("run2")
       ball_on_yard = Math.min(100, Math.max(0, startYard + penaltyYards));
 
       // Adjust distance: line-to-gain changes by penalty
       newDistance = currentDistance - penaltyYards;
-      console.log(newDistance)
       if (newDistance < 1) newDistance = 1; // min distance is 1 yard
     } else {
-      console.log("run3")
       newBall = Math.min(100, Math.max(0, ball_on_yard + penaltyYards));
 
       // Adjust distance: line-to-gain changes by penalty
       newDistance = currentDistance - penaltyYards;
-      console.log(newDistance)
       if (newDistance < 1) newDistance = 1; // min distance is 1 yard
     }
 
     return { down_to, distance_to: newDistance, ball_on_yard, isTurnover: false };
   }
 
+  if (defSafety) return { down_to: 1, distance_to: 10, ball_on_yard: 20, isTurnover: true };
   if (defenseScore) return { down_to: 1, distance_to: 10, ball_on_yard: 97, isTurnover: true };
   if (touchback) return { down_to: 1, distance_to: 10, ball_on_yard: 25, isTurnover: true };
   if (touchdown) return { down_to: 1, distance_to: 3, ball_on_yard: 97, isTurnover: false };

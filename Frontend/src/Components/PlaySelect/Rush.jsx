@@ -74,6 +74,7 @@ function Rush({ setFunc }) {
     let defenseScore = false;
     let touchback = false;
     let safety = false;
+    let defSafety = false
     let playType = "rush";
 
     if (!retCondition && endYardFinal >= 100) {
@@ -85,6 +86,12 @@ function Rush({ setFunc }) {
       playType = "defense";
       result = "Scoop and Score";
       endYardFinal = 3;
+    } else if (retCondition && (retNodes.Start.x - 50) / 10 < 100 && (retNodes.End.x - 50) / 10 >= 100 && !touchdown && !defenseScore) {
+      console.log("Ran Def Saftey")
+      result = "Def Safety";
+      playType = "defense";
+      defSafety = true;
+      endYardFinal = 20;
     } else if (retCondition) {
       result = "Fumble";
     } else if (endYardFinal <= 0 && !touchdown && !defenseScore) {
@@ -95,7 +102,6 @@ function Rush({ setFunc }) {
     } else {
       result = "Tackle";
     }
-
     if (retCondition && (retNodes.End.x - 50) / 10 >= 100) {
       touchback = true;
     }
@@ -113,7 +119,8 @@ function Rush({ setFunc }) {
       autoFirst,
       penCondition,
       penaltyYards,
-      safety
+      safety,
+      defSafety
     );
 
     console.log(nextPlay)
@@ -127,7 +134,8 @@ function Rush({ setFunc }) {
       distance_to: nextPlay.distance_to,
       ball_on_yard: nextPlay.ball_on_yard,
       players,
-      isTurnover: nextPlay.isTurnover
+      isTurnover: nextPlay.isTurnover,
+      defSafety
     };
   }
 
