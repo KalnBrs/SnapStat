@@ -1,3 +1,3 @@
-### Football Stat Tracker
+### SnapStat
 
 In Progress
