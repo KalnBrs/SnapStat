@@ -2,10 +2,11 @@ import store from "../Store/store"
 
 async function updateQuarter(quarter) {
   const gamestate = store.getState().game.game
+  const user = store.getState().user.user
   const response = await fetch(`http://localhost:8000/api/games/${gamestate.game_id}/state`, {
     method: "POST",
     headers: {
-      "Authorization": "Bearer <Token>",
+      "Authorization": `Bearer ${user.accessToken}`,
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
@@ -20,7 +21,7 @@ async function updateTimeout(timeoutTeam, timeoutTo) {
   const response = await fetch(`http://localhost:8000/api/games/${gamestate.game_id}/state`, {
     method: "POST",
     headers: {
-      "Authorization": "Bearer <Token>",
+      "Authorization": `Bearer ${user.accessToken}`,
       "Content-Type": "application/json"
     },
     body: JSON.stringify({

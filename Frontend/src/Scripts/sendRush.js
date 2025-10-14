@@ -24,10 +24,12 @@ async function sendRush({
   defSafety
 }) {
   const gameState = store.getState().game.game;
+  const user = store.getState().user.user;
+
   const response = await fetch(`http://localhost:8000/api/games/${gameState.game_id}/plays`, {
     method: "POST",
     headers: {
-      "Authorization": "Bearer <Token>",
+      "Authorization": `Bearer ${user.accessToken}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({

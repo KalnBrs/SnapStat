@@ -12,10 +12,11 @@ const points = {
   "Def Safety": 2,
   "2pt_made": 2,
   "Blocked extra TD": 2,
-  "Extra Point Made": 1
+  "Extra Point Made": 1,
+  "Extra Point Missed": 0
 }
 
-const defTurnovers = ["Interception", "Fumble", "Fumble",]
+const defTurnovers = ["Interception", "Fumble"]
 
 const getAllPlays = async (req, res) => {
   try {
@@ -38,7 +39,7 @@ const submitPlay = async (req, res) => {
     if (result in points) score_add = points[result]
     if (isTurnover) { newPossessionId = possession_team_id == req.game.home_team_id ? req.game.away_team_id : req.game.home_team_id }
     console.log(req.body)
-    if (result === "Safety" || result === "Def Safety") {
+    if (result === "Safety" || result === "Def Safety" || play_type == 'defense') {
       if (!defSafety) {
         side_score = side_score == "home_score" ? "away_score" : "home_score"
       }

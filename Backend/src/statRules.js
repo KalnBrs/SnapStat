@@ -139,7 +139,7 @@ const statRules = {
 // ---------------------------------------------------------------------------------------------------------------------------------------------
   punt: {
     'Punt Return': {
-      punter: [
+      kicker: [
         { stat: 'punt_attempts', value: 1 },
         { stat: 'punt_yard', fromValue: true }
       ],
@@ -148,7 +148,22 @@ const statRules = {
         { stat: 'return_yards', fromValue: true }
       ]
     },
+    Touchback: {
+      kicker: [
+        { stat: 'punt_attempts', value: 1 } 
+      ]
+    },
+    'Offensive Recovery': {
+      kicker: [
+        { stat: 'punt_attempts', value: 1 },
+        { stat: 'punt_yard', fromValue: true }
+      ]
+    },
     'Fair Catch': {
+      kicker: [
+        { stat: 'punt_attempts', value: 1 },
+        { stat: 'punt_yard', fromValue: true }
+      ],
       returner: [
         { stat: 'return_attempts', value: 1 }
       ]
@@ -157,7 +172,7 @@ const statRules = {
       blocker: [{ stat: 'punt_block', value: 1 }]
     },
     Touchdown: {
-      punter: [
+      kicker: [
         { stat: 'punt_attempts', value: 1 },
         { stat: 'punt_yard', fromValue: true }
       ],
@@ -173,7 +188,7 @@ const statRules = {
     'Kick Return': {
       kicker: [
         { stat: 'kickoff_yards', fromValue: true }, // if you're tracking kickoff yards, add a `kickoff_yards` stat
-        { stat: 'kickoff_attemepts', value: 1 }
+        { stat: 'kickoff_attempts', value: 1 }
       ],
       returner: [
         { stat: 'return_attempts', value: 1 },
@@ -188,13 +203,14 @@ const statRules = {
     },
     Touchback: {
       kicker: [
-        { stat: 'kickoff_attemepts', value: 1 } 
+        { stat: 'kickoff_attempts', value: 1 }
       ]
     },
     Touchdown: {
       kicker: [
         { stat: 'kick', value: 1 },
-        { stat: 'kickoff_yard', fromValue: true }
+        { stat: 'kickoff_yard', fromValue: true },
+        { stat: 'kickoff_attempts', value: 1 }
       ],
       returner: [
         { stat: 'return_attempts', value: 1 },

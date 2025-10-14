@@ -26,11 +26,12 @@ async function sendPass({
   defSafety
 }) {
   const gameState = store.getState().game.game;
+  const user = store.getState().user.user
 
   const response = await fetch(`http://localhost:8000/api/games/${gameState.game_id}/plays`, {
     method: "POST",
     headers: {
-      "Authorization": "Bearer <Token>",
+      "Authorization": `Bearer ${user.accessToken}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -216,7 +217,7 @@ function calculateNextDownAndDistancePass(
   if (defSafety) return { down_to: 1, distance_to: 10, ball_on_yard: 20, isTurnover: true };
 
   // 2. Defensive touchdown → kickoff
-  if (defenseScore) return { down_to: 1, distance_to: 10, ball_on_yard: 35, isTurnover: true };
+  if (defenseScore) return { down_to: 1, distance_to: 10, ball_on_yard: 97, isTurnover: true };
 
   // 3. Touchback
   if (touchback) return { down_to: 1, distance_to: 10, ball_on_yard: 25, isTurnover: true };

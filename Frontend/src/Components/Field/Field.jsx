@@ -13,6 +13,7 @@ const FIELD_WIDTH = 1100; // 100 yards * 10px + 2*50 endzones
 
 function Field() {
   const game_state = useSelector(state => state.game.game)
+  const user = useSelector(state => state.user.user)
   const nodes = useSelector(state => state.node.offenseNode)
   const retNodes = useSelector(state => state.node.defenseNode)
   const penNodes = useSelector(state => state.node.penaltyNode)
@@ -32,7 +33,7 @@ function Field() {
         const res = await fetch(`http://localhost:8000/api/games/${game_state.game_id}`, {
           method: "GET",
           headers: {
-            "Authorization": "Bearer <Token>",
+            "Authorization": `Bearer ${user.accessToken}`,
           }
         })
         if (!res.ok) throw new Error("Failed to fetch game");
