@@ -2,9 +2,9 @@ import DropDown from "./DropDown"
 import Button from "./Button"
 import { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { setReturn, setPenalty } from "../../Features/game/gameSlice"
-import { setError } from "../../Features/error/errorSlice"
-import { calculateKickDown, generateKickPlayersArray, generateKickResultData, runKick} from '../../Scripts/sendKick'
+import { setReturn, setPenalty } from "../../../Features/game/gameSlice"
+import { setError } from "../../../Features/error/errorSlice"
+import { calculateKickDown, generateKickPlayersArray, generateKickResultData, runKick} from '../../../Scripts/sendKick'
 const kickOptions = [
   {
     label: "Extra Point",

@@ -21,32 +21,30 @@ const getDrives = async (req, res) => {
   }
 }
 
-const startDrive = async (req, res) => {
-  const allowedColumns = ['game_id', 'team_id', 'start_yard']
-  const insertClauses = []
-  const values = []
-  const placeholders = []
-  let index = 1
-
-  const body = req.body
-  for (let key in body) {
-    if (!allowedColumns.includes(key)) throw new Error('Column Not allowed')
-    insertClauses.push(`${key}`)
-    values.push(`$${index}`)
-    placeholders.push(body[key])
-    index++
-  }
-  if (insertClauses.length === 0) return res.sendStatus(406)
-  const query = `INSERT INTO drives (${insertClauses.join(', ')}) VALUES(${values.join(', ')}) RETURNING *`
-  
-  try {
-    const result = await pool.query(query, placeholders)
-    await pool.query('UPDATE games SET current_drive_id = $1 WHERE game_id = $2', [result.rows[0].drive_id, req.game.game_id])
-    res.json(result.rows[0])
-  } catch (err) {
-    res.sendStatus(500)
-  }
+async function createDrive(gameId, teamId, startYard) {
+  const query = `
+    INSERT INTO drives (game_id, team_id, start_yard)
+    VALUES ($1, $2, $3)
+    RETURNING *;
+  `;
+  const result = await pool.query(query, [gameId, teamId, startYard]);
+  await pool.query('UPDATE games SET current_drive_id = $1 WHERE game_id = $2', [
+    result.rows[0].drive_id,
+    gameId,
+  ]);
+  return result.rows[0];
 }
+
+const startDrive = async (req, res) => {
+  try {
+    const { game_id, team_id, start_yard } = req.body;
+    const drive = await createDrive(game_id, team_id, start_yard);
+    res.json(drive);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+};
 
 const endDrive = async (req, res) => {
   const allowedColumns = ['end_yard', 'result']
@@ -73,4 +71,4 @@ const endDrive = async (req, res) => {
   }
 }
 
-module.exports = { getDrives, startDrive, endDrive, findDriveId }
+module.exports = { getDrives, startDrive, endDrive, findDriveId, createDrive }

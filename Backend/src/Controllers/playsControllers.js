@@ -1,5 +1,6 @@
 const pool = require('../Config/db')
 const { applyStatRules } = require('../statRules')
+const { createDrive } = require('./drivesControllers')
 
 const points = {
   "Touchdown": 6,
@@ -37,8 +38,10 @@ const submitPlay = async (req, res) => {
     let score_add = 0
     let newPossessionId = possession_team_id
     if (result in points) score_add = points[result]
-    if (isTurnover) { newPossessionId = possession_team_id == req.game.home_team_id ? req.game.away_team_id : req.game.home_team_id }
-    console.log(req.body)
+    if (isTurnover) { 
+      newPossessionId = possession_team_id == req.game.home_team_id ? req.game.away_team_id : req.game.home_team_id 
+      await createDrive(req.game.game_id, newPossessionId, ball_on); // example start yard
+    }
     if (result === "Safety" || result === "Def Safety" || play_type == 'defense') {
       if (!defSafety) {
         side_score = side_score == "home_score" ? "away_score" : "home_score"
@@ -61,7 +64,6 @@ const submitPlay = async (req, res) => {
     await client.query('COMMIT;')
     res.json({ game: game.rows[0], play: play.rows[0] })
   } catch (err) {
-    console.log(err.message)
     res.sendStatus(500)
   }
 }

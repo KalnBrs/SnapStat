@@ -4,9 +4,9 @@ import DropDown from './DropDown'
 import './PlaySelect.css'    
 import Button from './Button'
 import { useDispatch, useSelector } from 'react-redux'
-import { setPenalty, setReturn } from '../../Features/game/gameSlice'
-import { calculateNextDownAndDistancePass, runPass } from '../../Scripts/sendPass'
-import { setError } from '../../Features/error/errorSlice'
+import { setPenalty, setReturn } from '../../../Features/game/gameSlice'
+import { calculateNextDownAndDistancePass, runPass } from '../../../Scripts/sendPass'
+import { setError } from '../../../Features/error/errorSlice'
 
 const retTypes = [ { 
     label: "Fumble", 
@@ -24,6 +24,9 @@ function Pass({setFunc}) {
   const [fumbleRecoverer, setFumbleRecoverer] = useState()
 
   const [autoFirst, setAutoFirst] = useState(false)
+  const [twoPtSucc, setTwoPtSucc] = useState(false)
+  const [twoPtFail, setTwoPtFail] = useState(false)
+
 
   const [retType, setRetType] = useState()
 
@@ -45,6 +48,7 @@ function Pass({setFunc}) {
 
   const currentDown = useSelector(state => state.game.game.down)
   const currentDistance = useSelector(state => state.game.game.distance)
+  const currBallOnYard = useSelector(state => state.game.game.ball_on_yard)
 
   function setDefault() {
     dispatch(setReturn(false))
@@ -95,8 +99,14 @@ function Pass({setFunc}) {
     let safety = false;
     let defSafety = false;
   
+
+    if (twoPtSucc) {
+      result = "2pt_made"
+    } else if (twoPtFail) {
+      result = "2pt_missed"
+    }
     // 1. Incomplete
-    if (incomplete) {
+    else if (incomplete) {
       result = "Incomplete";
       endYardFinal = startYard;
     }
@@ -171,7 +181,8 @@ function Pass({setFunc}) {
       safety,
       penCondition,
       penaltyYards,
-      defSafety
+      defSafety,
+      result
     );
 
     console.log(nextPlay)
@@ -215,6 +226,7 @@ function Pass({setFunc}) {
             <Button label={'Turnover'} onClick={() => {setIncomplete(false); dispatch(setReturn(!retCondition))}} isActive={retCondition} width={200} margin={0} />
             <Button label={'Penalty'} onClick={() => {dispatch(setPenalty(!penCondition)); setAutoFirst(false)}} isActive={penCondition} width={100} margin={0} />
             {penCondition && <Button show={penCondition} label={'Auto First Down'} onClick={() => setAutoFirst(!autoFirst)} isActive={autoFirst} width={150} margin={0} />}
+            {currBallOnYard >= 95 && <> <Button label={'2pt Conversion Success'} onClick={() => setTwoPtSucc(true)} isActive={twoPtSucc} width={150} margin={0} /> <Button label={'2pt Conversion Failed'} onClick={() => setTwoPtFail(true)} isActive={twoPtFail} width={150} margin={0} /> </>}
             
 
             { retCondition &&

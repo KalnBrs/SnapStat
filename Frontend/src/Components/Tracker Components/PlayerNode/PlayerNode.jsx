@@ -2,7 +2,7 @@ import './PlayerNode.css';
 import Draggable from 'react-draggable';
 import { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setDefenseNode, setOffenseNode, setPenaltyNode } from '../../Features/node/nodeSlice';
+import { setDefenseNode, setOffenseNode, setPenaltyNode } from '../../../Features/node/nodeSlice';
 
 const ENDZONE_WIDTH = 50;
 const YARD_WIDTH = 10;

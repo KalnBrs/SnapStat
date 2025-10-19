@@ -148,11 +148,16 @@ function calculateNextDownAndDistanceRush(
   penCondition = false,
   penaltyYards = 0,
   safety = false,
-  defSafety = false
+  defSafety = false,
+  result
 ) {
   let down_to = currentDown;
   let distance_to = currentDistance;
   let ball_on_yard = endYard;
+
+  if (result == "2pt_made" || result == "2pt_missed") {
+    return {down_to: 1, distance_to: 20, ball_on_yard: 40, isTurnover: false}
+  }
 
   // Penalty check
   if (penCondition && penaltyYards !== 0) {

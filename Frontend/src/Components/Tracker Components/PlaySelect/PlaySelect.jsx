@@ -5,7 +5,7 @@ import Pass from './Pass';
 import Button from './Button';
 import Rush from './Rush';
 import { useDispatch } from 'react-redux';
-import { setPenalty, setReturn } from '../../Features/game/gameSlice';
+import { setPenalty, setReturn } from '../../../Features/game/gameSlice';
 import Kick from './Kick';
 import Penalty from './Penalty';
 

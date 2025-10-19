@@ -29,14 +29,14 @@ const rosterSlice = createSlice({
     }]
   },
   reducers: {
-    setHome: (state, action) => {
+    setRosterHome: (state, action) => {
       state.home = action.payload;
     },
-    setAway: (state, action) => {
+    setRosterAway: (state, action) => {
       state.away = action.payload;
     }
   }
 })
 
-export const { setHome, setAway } = rosterSlice.actions
+export const { setRosterHome, setRosterAway } = rosterSlice.actions
 export default rosterSlice.reducer

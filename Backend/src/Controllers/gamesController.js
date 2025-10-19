@@ -32,7 +32,6 @@ const updateGame = async (req, res) => {
     const result = await pool.query(query, values)
     res.json(result.rows[0])
   } catch (err) {
-    console.log(err)
     res.sendStatus(500)
   }
 }

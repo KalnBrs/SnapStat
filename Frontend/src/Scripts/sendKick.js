@@ -299,7 +299,6 @@ async function runKick(res) {
     return;
   }
 
-  console.log("Possesion ID: " + game.possession_team_id)
   // Send single API call
   const response = await sendKick({
     play_type: type,
@@ -334,7 +333,6 @@ async function runKick(res) {
   );
 
   // Use yardToPx helper and use distance from response to create the End node (first-down)
-  console.log("run data: " + response.game.distance + " " + distance_to)
   const ballY = response.game.ball_on_yard;
   const toGo = Number(response.game.distance) || distance_to || 10;
 

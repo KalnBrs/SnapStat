@@ -1,12 +1,13 @@
 import { useState } from 'react'
 
-import ConfirmationModal from '../ConfirmationModal'
+import ConfirmationModal from '../../ConfirmationModal'
 
 import './SidePannel.css'
 import { useDispatch, useSelector } from 'react-redux';
-import { setGame } from '../../Features/game/gameSlice';
-import { setError } from '../../Features/error/errorSlice';
-import { updateQuarter, updateTimeout } from '../../Scripts/sideBarUtilities';
+import { setGame } from '../../../Features/game/gameSlice';
+import { setError } from '../../../Features/error/errorSlice';
+import { updateQuarter, updateTimeout } from '../../../Scripts/sideBarUtilities';
+import AdjustModal from '../AdjustModal';
 
 const prefix = {
   1: 'st',
@@ -20,6 +21,8 @@ function SidePannel() {
   const awayTeam = useSelector(state => state.team.away)
   const gameState = useSelector(state => state.game.game)
   const dispatch = useDispatch()
+
+  const [showAdjust, setShowAdjust] = useState(false)
 
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [confirmationTeam, setConfirmationTeam] = useState(null)
@@ -45,7 +48,7 @@ function SidePannel() {
   const handleQuarterClose = () => { setShowQuarter(false) }
 
   const handleOpenConfermation = (team) => {
-    setConfirmationTeamValue(team.team_id == homeTeam.team_id ? 'home_timeouts' : 'away_timeouts')
+    setConfirmationTeamValue(team.team_id == homeTeam?.team_id ? 'home_timeouts' : 'away_timeouts')
     setConfirmationTeam(team)
     setShowConfirmation(true)
   }
@@ -66,6 +69,14 @@ function SidePannel() {
     setConfirmationTeamValue('')
     setShowConfirmation(false)
     setConfirmationTeam(false)
+  }
+
+  const handleAdjustOpen = () => {
+    setShowAdjust(true)
+  }
+
+  const handleAdjustClose = () => {
+    setShowAdjust(false)
   }
 
   return (
@@ -89,8 +100,9 @@ function SidePannel() {
         <option value="4">4th</option>
       </select>
       <button className='quarterButton' onClick={handleQuarterOpen}>Update Quarter</button> 
-      <button className='mt-5' onClick={() => handleOpenConfermation(homeTeam)} style={{backgroundColor: homeTeam.color}}>{homeTeam.abbreviation + ' Timeout'}</button>
-      <button className='mt-5' onClick={() => handleOpenConfermation(awayTeam)} style={{backgroundColor: awayTeam.color}}>{awayTeam.abbreviation + ' Timeout'}</button>
+      <button className='mt-5' onClick={() => handleOpenConfermation(homeTeam)} style={{backgroundColor: homeTeam?.color}}>{homeTeam?.abbreviation + ' Timeout'}</button>
+      <button className='mt-5' onClick={() => handleOpenConfermation(awayTeam)} style={{backgroundColor: awayTeam?.color}}>{awayTeam?.abbreviation + ' Timeout'}</button>
+      <button className='mt-5' onClick={() => handleAdjustOpen(awayTeam)} >Open Adjust Modal</button>
     </div>
     <ConfirmationModal
       show={showConfirmation}
@@ -98,6 +110,10 @@ function SidePannel() {
       onCancel={handleClose}
       title="Confirm Timeout"
       message={`Are you sure ${confirmationTeam?.team_name} called a timeout?`}
+    />
+    <AdjustModal
+      show={showAdjust}
+      onCancel={handleAdjustClose}
     />
   </>
   )

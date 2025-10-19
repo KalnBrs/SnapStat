@@ -6,9 +6,9 @@ const ConfirmationModal = ({ show, onConfirm, onCancel, title, message }) => {
   }
 
   return (
-    <div className="modal-overlay"> {/* Styling for overlay */}
-      <div className="modal-content"> {/* Styling for modal box */}
-        <h3>{title}</h3>
+    <div className="modal-overlay"> 
+      <div className="modal-content"> 
+        <h3 className='font-bold text-black'>{title}</h3>
         <p>{message}</p>
         <div className="modal-actions">
           <button onClick={onConfirm}>Confirm</button>

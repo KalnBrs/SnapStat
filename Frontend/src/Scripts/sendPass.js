@@ -92,7 +92,6 @@ async function runPass(res) {
     return;
   }
 
-  console.log("Possesion ID: " + game.possession_team_id)
   // Send single API call
   const response = await sendPass({
     play_type: type,
@@ -127,7 +126,6 @@ async function runPass(res) {
   );
 
   // Use yardToPx helper and use distance from response to create the End node (first-down)
-  console.log("run data: " + response.game.distance + " " + distance_to)
   const ballY = response.game.ball_on_yard;
   const toGo = Number(response.game.distance) || distance_to || 10;
 
@@ -169,37 +167,33 @@ function calculateNextDownAndDistancePass(
   safety = false,
   penCondition = false,
   penaltyYards = 0,
-  defSafety = false
+  defSafety = false,
+  result
 ) {
-  console.log(turnover, incomplete, touchdown, touchback, defenseScore, autoFirst, safety, penCondition)
-  console.log("currentDown: " + currentDown)
-  console.log("currentDistance: " + currentDistance)
-  console.log("startYard: " + startYard)
-  console.log("endYard: " + endYard)
 
   let down_to = currentDown;
   let distance_to = currentDistance;
   let ball_on_yard = endYard; // default to end of play
+
+  if (result == "2pt_made" || result == "2pt_missed") {
+    return { down_to: 1, distance_to: 20, ball_on_yard: 40, isTurnover: false };
+  }
 
   // 8. Apply penalty if applicable
   if (penCondition && penaltyYards !== 0) {
     let newBall = 0;
     let newDistance = 0;
     if (penaltyYards < 0) {
-      console.log("run2")
       newBall = Math.min(100, Math.max(0, startYard + penaltyYards));
 
       // Adjust distance: line-to-gain changes by penalty
       newDistance = currentDistance - penaltyYards;
-      console.log(newDistance)
       if (newDistance < 1) newDistance = 1; // min distance is 1 yard
     } else {
-      console.log("run3")
       newBall = Math.min(100, Math.max(0, ball_on_yard + penaltyYards));
 
       // Adjust distance: line-to-gain changes by penalty
       newDistance = currentDistance - penaltyYards;
-      console.log(newDistance)
       if (newDistance < 1) newDistance = 1; // min distance is 1 yard
     }
 

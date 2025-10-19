@@ -40,6 +40,18 @@ const statRules = {
         { stat: 'rec_td', value: 1 }
       ]
     },
+    '2pt Conversion': {
+      passer: [
+        { stat: 'attempts', value: 1 },
+        { stat: 'completions', value: 1 },
+        { stat: 'passing_yards', fromValue: true },
+      ],
+      receiver: [
+        { stat: 'receptions', value: 1 },
+        { stat: 'targets', value: 1},
+        { stat: 'rec_yards', fromValue: true },
+      ]
+    },
     Fumble: {
       passer: [
         { stat: 'attempts', value: 1 },
@@ -87,6 +99,12 @@ const statRules = {
         fumble_recoverer: [
           { stat: 'fumble_recovery', value: 1 } 
         ]
+    },
+    '2pt Conversion': {
+      rusher: [
+        { stat: 'carries', value: 1 },
+        { stat: 'run_yards', fromValue: true }
+      ],
     },
   },
 // ---------------------------------------------------------------------------------------------------------------------------------------------

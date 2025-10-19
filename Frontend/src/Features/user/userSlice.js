@@ -4,7 +4,7 @@ const userSlice = createSlice({
   name: 'user',
   initialState: {
     user: {
-      accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkthZWxhbiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2MDQ1NTE3NCwiZXhwIjoxNzYwNDY1OTc0fQ.2xpWwfZDX-nOa9XS0KCnF6acbGEF1sew54kVLUr1ulM",
+      accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkthZWxhbiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2MDgzODIyNiwiZXhwIjoxNzYwODQ5MDI2fQ.IHCqfWeJUV7IJaGnTGyoMvdErU3qDiW9Kzegc7MWQUo",
       username: "Kaelan",
       role: "admin"
     }

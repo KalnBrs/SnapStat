@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 
-import PlayerNode from '../PlayerNode';
+import { useParams } from 'react-router-dom';
+
+import PlayerNode from '../../Tracker Components/PlayerNode';
 
 import './Field.css'
 import { useSelector, useDispatch } from 'react-redux';
-import { setDefault, setOffenseNode, setDefenseNode } from '../../Features/node/nodeSlice';
-import { setGame } from '../../Features/game/gameSlice';
+import { setDefault } from '../../../Features/node/nodeSlice';
+import { fetchRosterData, fetchSetData, fetchTeamData } from '../../../Scripts/fieldApi';
 
 const YARD_WIDTH = 10;  // 10px per yard
 const ENDZONE_WIDTH = 50; // 5% of field width = 50px
@@ -13,48 +15,41 @@ const FIELD_WIDTH = 1100; // 100 yards * 10px + 2*50 endzones
 
 function Field() {
   const game_state = useSelector(state => state.game.game)
-  const user = useSelector(state => state.user.user)
   const nodes = useSelector(state => state.node.offenseNode)
   const retNodes = useSelector(state => state.node.defenseNode)
   const penNodes = useSelector(state => state.node.penaltyNode)
   const retCondition = useSelector(state => state.game.return)
   const penCondition = useSelector(state => state.game.penalty)
-
-  const homeColor = useSelector(state => state.team.home.color)
-  const awayColor = useSelector(state => state.team.away.color)
   const team = useSelector(state => state.team)
+
+
+  const { gameID } = useParams();
+
   const dispatch = useDispatch()
 
   const [initialized, setInitialized] = useState(false);
 
-  useEffect( () => {
-    const fetchSetData = async () => {
-      try {
-        const res = await fetch(`http://localhost:8000/api/games/${game_state.game_id}`, {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${user.accessToken}`,
-          }
-        })
-        if (!res.ok) throw new Error("Failed to fetch game");
-        const data = await res.json();
-        dispatch(setGame(data));
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    fetchSetData();
+  useEffect(() => {
+    const init = async () => {
+      await fetchSetData(gameID);
+      await fetchTeamData();
+      await fetchRosterData();
+    };
+    init();
+  }, [gameID, dispatch]);
 
-    console.log("Use Effect Ran")
-    if (!initialized && game_state.ball_on_yard !== undefined) {
+  useEffect(() => {
+    if (!initialized && game_state?.ball_on_yard !== undefined) {
       dispatch(setDefault({
         ballOnYard: game_state.ball_on_yard,
         yardWidth: YARD_WIDTH,
         endzoneWidth: ENDZONE_WIDTH
-      }))
-      setInitialized(true)
+      }));
+      setInitialized(true);
     }
-  }, [game_state.ball_on_yard])
+  }, [game_state.ball_on_yard, initialized, dispatch]);
+
+  if (!game_state?.ball_on_yard || (!team?.home && !team?.away)) return <p>Loading field...</p>;
 
   return (
     <>
@@ -105,7 +100,7 @@ function EndzonesField({ children }) {
   const teams = useSelector(state => state.team)
   return (
     <div className="field" style={{ width: FIELD_WIDTH, height: '400px', position: 'relative' }}>
-      <div className="endzone left-endzone" style={{ backgroundColor: teams.home.color }}><span className="endzone-label">{teams.home.abbreviation}</span></div>
+      <div className="endzone left-endzone" style={{ backgroundColor: teams.home?.color }}><span className="endzone-label">{teams.home?.abbreviation}</span></div>
       {Array.from({ length: 100 }, (_, i) => (
         <div key={i} className={`yard ${i % 10 === 0 ? 'ten' : i % 5 === 0 ? 'five' : ''}`}>
           {!(i % 10 === 0 || i % 5 === 0) &&
@@ -117,7 +112,7 @@ function EndzonesField({ children }) {
         </div>
       ))}
       {children}
-      <div className="endzone right-endzone" style={{ backgroundColor: teams.away.color }}><span className="endzone-label">{teams.away.abbreviation}</span></div>
+      <div className="endzone right-endzone" style={{ backgroundColor: teams.away?.color }}><span className="endzone-label">{teams.away?.abbreviation}</span></div>
     </div>
   );
 }

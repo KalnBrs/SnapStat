@@ -6,7 +6,7 @@ const getState = (req, res) => {
 }
 
 const updateState = async (req, res) => {
-  const allowedColumns = ['quarter', 'down', 'distance', 'ball_on_yard', 'possession_team_id', 'current_drive_id', 'home_timeouts', 'away_timeouts']
+  const allowedColumns = ['quarter', 'down', 'distance', 'ball_on_yard', 'possession_team_id', 'current_drive_id', 'home_timeouts', 'away_timeouts', "home_score", "away_score"]
   const setClauses = []
   const values = []
   let index = 1

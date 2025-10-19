@@ -3,10 +3,10 @@ import './PlaySelect.css';
 import DropDown from './DropDown';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
-import { setReturn, setPenalty } from '../../Features/game/gameSlice';
+import { setReturn, setPenalty } from '../../../Features/game/gameSlice';
 import Button from './Button';
-import { setError } from '../../Features/error/errorSlice';
-import { calculateNextDownAndDistanceRush, runRush } from '../../Scripts/sendRush';
+import { setError } from '../../../Features/error/errorSlice';
+import { calculateNextDownAndDistanceRush, runRush } from '../../../Scripts/sendRush';
 
 function Rush({ setFunc }) {
   const [rbSelect, setRB] = useState();
@@ -14,6 +14,9 @@ function Rush({ setFunc }) {
   const [isFumble, setIsFumble] = useState(false);
   const [fumbleRecoverer, setFumbleRecoverer] = useState();
   const [autoFirst, setAutoFirst] = useState(false);
+
+  const [twoPtSucc, setTwoPtSucc] = useState(false)
+  const [twoPtFail, setTwoPtFail] = useState(false)
 
   const homeRoster = useSelector(state => state.roster.home);
   const awayRoster = useSelector(state => state.roster.away);
@@ -31,6 +34,7 @@ function Rush({ setFunc }) {
 
   const currentDown = useSelector(state => state.game.game.down);
   const currentDistance = useSelector(state => state.game.game.distance);
+  const currBallOnYard = useSelector(state => state.game.game.ball_on_yard)
 
   function setDefault() {
     dispatch(setReturn(false));
@@ -77,7 +81,11 @@ function Rush({ setFunc }) {
     let defSafety = false
     let playType = "rush";
 
-    if (!retCondition && endYardFinal >= 100) {
+    if (twoPtSucc) {
+      result = "2pt_made"
+    } else if (twoPtFail) {
+      result = "2pt_missed"
+    } else if (!retCondition && endYardFinal >= 100) {
       result = "Touchdown";
       touchdown = true;
       endYardFinal = 97;
@@ -120,7 +128,8 @@ function Rush({ setFunc }) {
       penCondition,
       penaltyYards,
       safety,
-      defSafety
+      defSafety,
+      result
     );
 
     console.log(nextPlay)
@@ -190,6 +199,8 @@ function Rush({ setFunc }) {
                 margin={0}
               />
             )}
+            {currBallOnYard >= 95 && <> <Button label={'2pt Conversion Success'} onClick={() => setTwoPtSucc(true)} isActive={twoPtSucc} width={150} margin={0} /> <Button label={'2pt Conversion Failed'} onClick={() => setTwoPtFail(true)} isActive={twoPtFail} width={150} margin={0} /> </>}
+            
           </div>
         </div>
 
