@@ -10,8 +10,8 @@ function Home() {
 
   return (
     <div>
-      <h1>Hello</h1>
-      <button className='p-3' onClick={handleClick()}> Go to Tracker </button>
+      <h1>Home Page</h1>
+      <button className='p-3' onClick={handleClick}> Go to Tracker </button>
     </div>
   )
 }

@@ -4,9 +4,9 @@ const userSlice = createSlice({
   name: 'user',
   initialState: {
     user: {
-      accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkthZWxhbiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2MDgzODIyNiwiZXhwIjoxNzYwODQ5MDI2fQ.IHCqfWeJUV7IJaGnTGyoMvdErU3qDiW9Kzegc7MWQUo",
-      username: "Kaelan",
-      role: "admin"
+      accessToken: null,
+      username: null,
+      role: null
     }
   },
   reducers: {

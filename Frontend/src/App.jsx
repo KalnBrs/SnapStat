@@ -5,7 +5,7 @@ import Tracker from './pages/Tracker';
 import Home from './pages/Home';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
-
+import GameSelect from './pages/gameSelect';
 
 function App() {
   
@@ -13,8 +13,8 @@ function App() {
     <Router>
       <Routes>
         <Route path='/' element={<Home />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/tracker/' element={<p>No Game ID Specified</p>} />
+        <Route path='/login/' element={<Login />} />
+        <Route path='/tracker/' element={<GameSelect />} />
         <Route path='/tracker/:gameID' element={<Tracker />} />
       </Routes>
     </Router>

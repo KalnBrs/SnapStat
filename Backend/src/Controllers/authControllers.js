@@ -40,7 +40,7 @@ const login = async (req, res) => {
       });
       res.json({ accessToken: accessToken, user: user })
     } else {
-      res.send('Not Allowed')
+      res.status(404).send('Not Allowed')
     }
   } catch (err) {
     res.sendStatus(500)
