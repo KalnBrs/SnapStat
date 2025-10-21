@@ -18,6 +18,7 @@ async function updateQuarter(quarter) {
 
 async function updateTimeout(timeoutTeam, timeoutTo) {
   const gamestate = store.getState().game.game
+  const user = store.getState().user.user
   const response = await fetch(`http://localhost:8000/api/games/${gamestate.game_id}/state`, {
     method: "POST",
     headers: {

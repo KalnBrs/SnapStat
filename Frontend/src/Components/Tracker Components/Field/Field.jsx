@@ -30,6 +30,7 @@ function Field() {
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
+    if (!gameID) return;
     const init = async () => {
       await fetchSetData(gameID);
       await fetchTeamData();

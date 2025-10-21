@@ -11,7 +11,7 @@ function Home() {
   return (
     <div>
       <h1>Home Page</h1>
-      <button className='p-3' onClick={handleClick}> Go to Tracker </button>
+      <button className='p-3' onClick={handleClick}> Go to Log in </button>
     </div>
   )
 }

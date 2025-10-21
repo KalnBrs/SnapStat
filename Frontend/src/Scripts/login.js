@@ -1,8 +1,10 @@
 import store from "../Store/store";
+import { setAccessToken } from "../Features/user/userSlice";
 
 async function logIn(username, password) {
   const response = await fetch(`http://localhost:8000/api/auth/login`, {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json"
     },
@@ -25,4 +27,19 @@ async function logIn(username, password) {
   return await response.json();
 }
 
-export {logIn}
+async function refreshToken() {
+  const res = await fetch('http://localhost:8000/api/auth/refresh', {
+    method: 'POST',
+    credentials: 'include'
+  });
+
+  if (!res.ok) {
+    console.error('Refresh failed', await res.text());
+    return;
+  }
+
+  const data = await res.json();
+  store.dispatch(setAccessToken(data.accessToken));
+}
+
+export { logIn, refreshToken }

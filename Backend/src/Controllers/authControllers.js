@@ -33,9 +33,9 @@ const login = async (req, res) => {
 
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
-        secure: true,
-        sameSite: 'Strict',
-        path: 'api/auth/refresh',
+        secure: false,
+        sameSite: 'Lax',
+        path: '/',
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
       res.json({ accessToken: accessToken, user: user })
@@ -54,9 +54,9 @@ const logout = async (req, res) => {
     await redisClient.del(token);
     res.clearCookie('refreshToken', {
       httpOnly: true,
-      secure: true,
-      sameSite: 'Strict',
-      path: 'api/auth/refresh',
+      secure: false,
+      sameSite: 'Lax',
+      path: '/',
     });
   }
 
@@ -98,7 +98,7 @@ const getMe = async (req, res) => {
 }
 
 function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '3h' })
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '10m' })
 }
 
 module.exports = { authenticateToken, login, logout, register, refresh, getMe }
