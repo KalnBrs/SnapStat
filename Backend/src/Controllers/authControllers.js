@@ -21,9 +21,7 @@ const login = async (req, res) => {
   if (user1 == null) return res.status(404).send('Could not find user')
   try {
     if (await bcrypt.compare(req.body.password, user1.password)) {
-      const username = user1.username
-      const role = user1.role
-      const user = { username: username, role: role }
+      const user = { username: user1.username, role: user1.role, user_id: user1.user_id, email: user1.email }
       const accessToken = generateAccessToken(user)
       const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' })
 
@@ -98,7 +96,7 @@ const getMe = async (req, res) => {
 }
 
 function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '10m' })
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '4h' })
 }
 
 module.exports = { authenticateToken, login, logout, register, refresh, getMe }

@@ -8,15 +8,23 @@ import Login from './pages/Login';
 import GameSelect from './pages/gameSelect';
 import { useEffect, useState } from 'react';
 import { refreshToken } from './Scripts/login';
-import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 function App() {
   const [ready, setReady] = useState(false)
 
+
   useEffect(() => {
     async function init() {
-      await refreshToken();
-      setReady(true)
+      try {
+        await refreshToken();
+        setReady(true)
+        throw new Error()
+      } catch (e) {
+        console.log(e)
+        return <Navigate to="/login/" replace />;
+      }
     }
     init()
   }, [])

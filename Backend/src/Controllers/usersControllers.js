@@ -37,6 +37,15 @@ const updateId = async (req, res) => {
   }
 }
 
+const findGames = async (req, res) => {
+  try {
+    let games = await pool.query('SELECT g.* FROM games g JOIN gameplayers gp ON g.game_id = gp.game_id WHERE gp.user_id = $1;', [req.user.user_id])
+    res.json(games.rows)
+  } catch (err) {
+    res.sendStatus(500)
+  }
+}
+
 const deleteUser = async (req, res) => {
   try {
     let password = await pool.query('SELECT password FROM users WHERE user_id = $1', [req.user.user_id])
@@ -57,4 +66,4 @@ const getUsers = async (req, res) => {
   res.json(users.rows);
 }
 
-module.exports = { findId, updateId, deleteUser, getUsers }
+module.exports = { findId, updateId, deleteUser, getUsers, findGames }

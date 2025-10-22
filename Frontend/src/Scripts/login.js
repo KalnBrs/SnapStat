@@ -1,5 +1,6 @@
 import store from "../Store/store";
 import { setAccessToken } from "../Features/user/userSlice";
+import Error from "../Components/Error";
 
 async function logIn(username, password) {
   const response = await fetch(`http://localhost:8000/api/auth/login`, {
@@ -34,8 +35,7 @@ async function refreshToken() {
   });
 
   if (!res.ok) {
-    console.error('Refresh failed', await res.text());
-    return;
+    throw new Error('Refresh failed');
   }
 
   const data = await res.json();
