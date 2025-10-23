@@ -6,7 +6,7 @@ const userSlice = createSlice({
     user: {
       accessToken: null,
       username: null,
-      role: null
+      role: null,
     }
   },
   reducers: {

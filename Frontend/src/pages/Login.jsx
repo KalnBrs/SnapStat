@@ -70,11 +70,9 @@ function Login() {
           <button className="showButton" onClick={toggleShow}><img src={imagePath} alt="" /></button>
           <label htmlFor="password" className="text-black bg-transparent text-lg -top-0.5 justify-left pl-5 absolute ease-in-out duration-300 pointer-events-none input-label">Password </label>
         </div>
-        {showInccorect && <p>Inccorect Password or Username not found</p>}
-        <button type="submit" className="px-40"> Log In </button>
+        {showInccorect && <p className="text-red-600">Inccorect Password or Username not found</p>}
+        <button type="submit" className="px-40 mt-2"> Log In </button>
       </form>
-
-      
     </>
   )
 }

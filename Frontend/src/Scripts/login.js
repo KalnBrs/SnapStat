@@ -2,6 +2,22 @@ import store from "../Store/store";
 import { setAccessToken } from "../Features/user/userSlice";
 import Error from "../Components/Error";
 
+async function getGames() {
+  const user = store.getState().user.user
+  const response = await fetch(`http://localhost:8000/api/users/games`, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${user.accessToken}`,
+    }
+  })
+
+  if (!response.ok) {
+    console.error("getGames caused an error")
+  }
+
+  return await response.json();
+}
+
 async function logIn(username, password) {
   const response = await fetch(`http://localhost:8000/api/auth/login`, {
     method: "POST",
@@ -14,8 +30,6 @@ async function logIn(username, password) {
       "password": password
     })
   });
-
-  console.log()
 
   if (response.status == 404) {
     return null;
@@ -42,4 +56,4 @@ async function refreshToken() {
   store.dispatch(setAccessToken(data.accessToken));
 }
 
-export { logIn, refreshToken }
+export { logIn, refreshToken, getGames }

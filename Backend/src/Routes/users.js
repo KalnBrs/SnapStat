@@ -12,12 +12,11 @@ router.use('/', authenticateToken)
 router.get('/', getUsers)
 
 // Get all games for a user
+router.route('/games')
+  .get(findGames)
 
 // Get a specific user
 router.param('id', findId)
-
-router.route('/:id/games')
-  .get(findGames)
 
 router.route('/:id')
   .get((req, res) => { res.json(req.user) })

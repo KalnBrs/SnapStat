@@ -5,10 +5,9 @@ import Tracker from './pages/Tracker';
 import Home from './pages/Home';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
-import GameSelect from './pages/gameSelect';
+import GameSelect from './pages/GameSelect';
 import { useEffect, useState } from 'react';
 import { refreshToken } from './Scripts/login';
-import { useNavigate } from 'react-router-dom';
 import { Navigate } from 'react-router-dom';
 
 function App() {
@@ -20,9 +19,9 @@ function App() {
       try {
         await refreshToken();
         setReady(true)
-        throw new Error()
       } catch (e) {
         console.log(e)
+        setReady(true)
         return <Navigate to="/login/" replace />;
       }
     }
@@ -32,14 +31,16 @@ function App() {
   if (!ready) return null;
 
   return (
-    <Router>
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/login/' element={<Login />} />
-        <Route path='/tracker/' element={<GameSelect />} />
-        <Route path='/tracker/:gameID' element={<Tracker />} />
-      </Routes>
-    </Router>
+    <>
+      <Router>
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/login/' element={<Login />} />
+          <Route path='/tracker/' element={<GameSelect />} />
+          <Route path='/tracker/:gameID' element={<Tracker />} />
+        </Routes>
+      </Router>
+    </>
   )
 }
 

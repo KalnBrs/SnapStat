@@ -11,21 +11,21 @@ const PlayerNode = ({ type, id, node, pos_team_id }) => {
   const nodeRef = useRef(null); 
   const dispatch = useDispatch()
   const team = useSelector(state => state.team)
-  let color = team.home.team_id == pos_team_id ? team.home.color : team.away.color
+  let color = team.home.team_id == pos_team_id ? team.home?.color : team.away?.color
   if (type == "pen") {
     color = "yellow"
   }
   else if (type == "off") {
     if (team.home.team_id == pos_team_id) {
-      color = team.home.color
+      color = team.home?.color
     } else {
-      color = team.away.color
+      color = team.away?.color
     }
   } else {
     if (team.home.team_id == pos_team_id) {
-      color = team.away.color
+      color = team.away?.color
     } else {
-      color = team.home.color
+      color = team.home?.color
     }
   }
   // if type is off + home team and possesion id same : home 
