@@ -5,10 +5,12 @@ import Tracker from './pages/Tracker';
 import Home from './pages/Home';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
-import GameSelect from './pages/GameSelect';
 import { useEffect, useState } from 'react';
 import { refreshToken } from './Scripts/login';
 import { Navigate } from 'react-router-dom';
+import NavBar from './Components/NavBar';
+import GameSelect from '../src/pages/GameSelect';
+
 
 function App() {
   const [ready, setReady] = useState(false)
@@ -22,7 +24,7 @@ function App() {
       } catch (e) {
         console.log(e)
         setReady(true)
-        return <Navigate to="/login/" replace />;
+        return <Navigate to="/login/" replace />; // Change to a route page
       }
     }
     init()
@@ -32,6 +34,7 @@ function App() {
 
   return (
     <>
+      <NavBar />
       <Router>
         <Routes>
           <Route path='/' element={<Home />} />

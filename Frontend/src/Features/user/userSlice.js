@@ -7,6 +7,8 @@ const userSlice = createSlice({
       accessToken: null,
       username: null,
       role: null,
+      email: null,
+      user_id: null
     }
   },
   reducers: {
@@ -20,9 +22,12 @@ const userSlice = createSlice({
       state.user.role = action.payload
     },
     setUser: (state, action) => {
-      state.user = action.payload
+      state.user.username = action.payload.username
+      state.user.role = action.payload.role
+      state.user.email = action.payload.email
+      state.user.user_id = action.payload.user_id
     }
-  } // kickoff_attempts kickoff_attemepts
+  } 
 })
 
 export const { setAccessToken, setUsername, setRole, setUser } = userSlice.actions

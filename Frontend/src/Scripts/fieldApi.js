@@ -76,7 +76,7 @@ const fetchRoster = async (team_id, type) => {
     if (!res.ok) throw new Error("Failed to fetch roster with team id: " + team_id);
     const data = await res.json();
     if (type == "home") {
-      store.dispatch(setRosterAway(data));
+      store.dispatch(setRosterHome(data));
     } else {
       store.dispatch(setRosterAway(data));
     }
@@ -90,6 +90,8 @@ const fetchRosterData = async () => {
   const state = store.getState();
   const homeTeamId = state.game.game.home_team_id
   const awayTeamId = state.game.game.away_team_id
+
+  console.log('home' + homeTeamId)
 
   await fetchRoster(homeTeamId, "home")
   await fetchRoster(awayTeamId, "away")

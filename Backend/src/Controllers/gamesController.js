@@ -61,11 +61,14 @@ const insertGame = async (req, res) => {
     index++
   }
   if (insertClauses.length === 0) return res.sendStatus(406)
-  const query = `INSERT INTO games (${insertClauses.join(', ')}) VALUES(${values.join(', ')}) RETURNING *`
+  const query = `INSERT INTO games (${insertClauses.join(', ')}) VALUES(${values.join(', ')}) RETURNING *;`
+
   try {
     const result = await pool.query(query, placeholders)
+    await pool.query(`INSERT INTO gameplayers (game_id, user_id) VALUES(${result.rows[0].game_id}, '${req.user.user_id}') RETURNING *`)
     res.json(result.rows[0])
   } catch (err) {
+    console.log(err.message)
     res.sendStatus(500)
   }
 }

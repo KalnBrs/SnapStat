@@ -63,15 +63,25 @@ const logout = async (req, res) => {
 
 const register = async (req, res) => {
   try {
-    let { email } = req.body
-    if (email == undefined) email = null;
-    const hashedPassword = await bcrypt.hash(req.body.password, 10)
-    pool.query(' INSERT INTO users (user_id, username, email, password) VALUES (uuid_generate_v4(), $1, $2, $3);', [req.body.username, email, hashedPassword])
-    res.sendStatus(201)
+    const { username, password, email } = req.body;
+
+    if (!username || !password) { return res.status(400).json({ error: 'Username and password are required.' });}
+    const existingUser = await pool.query('SELECT * FROM users WHERE username = $1;', [username]);
+    if (existingUser.rows.length > 0) { return res.sendStatus(409); } // Conflict
+
+    const safeEmail = email || null;
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await pool.query(
+      'INSERT INTO users (user_id, username, email, password) VALUES (uuid_generate_v4(), $1, $2, $3);',
+      [username, safeEmail, hashedPassword]
+    );
+    res.sendStatus(201); // Created
   } catch (err) {
-    res.sendStatus(500)
+    console.error('Error during registration:', err.message);
+    res.sendStatus(500);
   }
-}
+};
 
 const refresh = async (req, res) => {
   const refreshToken = req.cookies.refreshToken
@@ -90,7 +100,7 @@ const refresh = async (req, res) => {
 }
 
 const getMe = async (req, res) => {
-  const users = await pool.query('SELECT * FROM users WHERE username = $1', [req.body.username])
+  const users = await pool.query('SELECT user_id, username, email, role FROM users WHERE username = $1', [req.user.username])
   if (!users) return res.sendStatus(404)
   res.json(users.rows[0])
 }

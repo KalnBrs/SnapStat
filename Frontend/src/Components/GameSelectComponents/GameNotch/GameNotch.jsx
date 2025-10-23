@@ -18,8 +18,6 @@ const GameNotch = ({item}) => {
 
   useEffect(() => {
     async function init() {
-      console.log(await getTeam(item.home_team_id))
-      console.log(await getTeam(item.away_team_id))
       setHomeTeam(await getTeam(item.home_team_id))
       setAwayTeam(await getTeam(item.away_team_id))
     }
@@ -42,7 +40,7 @@ const GameNotch = ({item}) => {
         <p className='mx-2'>vs</p>
         <p>{item.home_score}</p>
         <div>
-          {homeTeam && <img src={homeTeam.logo_url} alt="" className='w-15 mx-2' />}
+        {homeTeam && (homeTeam.logo_url != null ? (<img src={homeTeam.logo_url} alt=""className='w-15 mx-2'/>) : <img src='/question-sign.png' className='w-15 mx-2'></img>)}
           <p>{homeTeam?.abbreviation}</p>
         </div>
         <div className='w-5 h-5' style={{backgroundColor: homeTeam?.color}} />

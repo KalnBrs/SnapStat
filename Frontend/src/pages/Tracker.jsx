@@ -10,19 +10,19 @@ function Tracker() {
   const { gameID } = useParams()
 
   return (
-    <>
+    <div className='w-9/12 flex justify-self-center flex-col mt-15'>
       <Error />
       <div className='flex flex-row'>
-        <div className='pr-10'>
+        <div className='pr-10 '>
           <Scoreboard />
           <Field game_id={gameID} />
         </div>
-        <div className='w-200'>
+        <div className='w-35'>
           <SidePannel />
         </div>
       </div>
-      <PlaySelect />
-    </>
+      <PlaySelect  />
+    </div>
   )
 }
 

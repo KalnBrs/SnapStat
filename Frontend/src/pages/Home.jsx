@@ -9,7 +9,7 @@ function Home() {
   }
 
   return (
-    <div>
+    <div className='flex flex-col justify-self-center'>
       <h1>Home Page</h1>
       <button className='p-3' onClick={handleClick}> Go to Log in </button>
     </div>

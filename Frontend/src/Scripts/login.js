@@ -1,9 +1,10 @@
 import store from "../Store/store";
-import { setAccessToken } from "../Features/user/userSlice";
+import { setAccessToken, setUser } from "../Features/user/userSlice";
 import Error from "../Components/Error";
 
 async function getGames() {
   const user = store.getState().user.user
+  console.log(user)
   const response = await fetch(`http://localhost:8000/api/users/games`, {
     method: "GET",
     headers: {
@@ -54,6 +55,21 @@ async function refreshToken() {
 
   const data = await res.json();
   store.dispatch(setAccessToken(data.accessToken));
+
+  const user = store.getState().user.user
+  const res2 = await fetch (`http://localhost:8000/api/auth/me`, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${user.accessToken}`
+    }
+  })
+
+  if (!res2.ok) {
+    throw new Error('Getting uesr data failed');
+  }
+
+  const userData = await res2.json();
+  store.dispatch(setUser(userData))
 }
 
 export { logIn, refreshToken, getGames }

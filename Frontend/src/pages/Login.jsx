@@ -19,6 +19,7 @@ function Login() {
   const navigate = useNavigate()
 
   const toggleShow = () => {
+    event.preventDefault()
     setPasswordType(prevType => (prevType === "password" ? "text" : "password"));
     setImagePath(prevType => (prevType === 'eyeOn.png' ? "eyeOff.png" : 'eyeOn.png'))
   }
@@ -30,8 +31,6 @@ function Login() {
       setShowInccorect(true)
       return;
     }
-
-    console.log(result)
 
     setShowInccorect(false)
     store.dispatch(setUser({
@@ -45,7 +44,7 @@ function Login() {
   }
 
   return (
-    <>
+    <div className="flex justify-center w-full mt-50">
       <form className="bg-gray-200 rounded-md p-3 w-150" onSubmit={handleSubmit}>
         <p className="text-gray-500 text-md text-left ml-2">Please enter your details</p>
         <p className="relative text-black font-bold text-4xl ml-2 -top-1 text-left pb-2.5">Welcome Back</p>
@@ -73,7 +72,7 @@ function Login() {
         {showInccorect && <p className="text-red-600">Inccorect Password or Username not found</p>}
         <button type="submit" className="px-40 mt-2"> Log In </button>
       </form>
-    </>
+    </div>
   )
 }
 
