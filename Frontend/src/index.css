@@ -66,6 +66,14 @@ button:focus-visible {
   }
 }
 
+.linkContainer a {
+  color: white;
+}
+
+.linkContainer a:hover {
+  color: #747bff;
+}
+
 .showButton {
   background: transparent;
   border: none;

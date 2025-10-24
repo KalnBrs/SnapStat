@@ -4,8 +4,23 @@ import Error from "../Components/Error";
 
 async function getGames() {
   const user = store.getState().user.user
-  console.log(user)
   const response = await fetch(`http://localhost:8000/api/users/games`, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${user.accessToken}`,
+    }
+  })
+
+  if (!response.ok) {
+    console.error("getGames caused an error")
+  }
+
+  return await response.json();
+}
+
+async function getTeams() {
+  const user = store.getState().user.user
+  const response = await fetch(`http://localhost:8000/api/users/teams`, {
     method: "GET",
     headers: {
       "Authorization": `Bearer ${user.accessToken}`,
@@ -72,4 +87,4 @@ async function refreshToken() {
   store.dispatch(setUser(userData))
 }
 
-export { logIn, refreshToken, getGames }
+export { logIn, refreshToken, getGames, getTeams }

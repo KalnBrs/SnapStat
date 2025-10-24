@@ -25,7 +25,7 @@ const getAllPlayers = async (req, res) => {
 }
 
 const insertPlayer = async (req, res) => {
-  const allowedColumns = ['name', 'number', 'team_id']
+  const allowedColumns = ['name', 'number', 'team_id', 'year', 'position', 'height', 'weight']
   const insertClauses = []
   const values = []
   const placeholders = []

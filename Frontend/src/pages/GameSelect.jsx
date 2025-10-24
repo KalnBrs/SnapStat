@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import '../index.css'
 import { useEffect, useState } from 'react';
 import { getGames } from '../Scripts/login';
@@ -7,7 +6,6 @@ import GameNotch from '../Components/GameSelectComponents/GameNotch';
 
 function GameSelect() {
   const [games, setGames] = useState([])
-
   const [ready, setReady] = useState(false)
 
   useEffect(() => {

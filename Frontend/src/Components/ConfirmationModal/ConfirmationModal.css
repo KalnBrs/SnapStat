@@ -30,6 +30,10 @@
   color: #333;
 }
 
+.error {
+  color: rgb(220, 38, 38)
+}
+
 /* Modal buttons */
 .modal-content button {
   padding: 10px 20px;

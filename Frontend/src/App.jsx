@@ -10,6 +10,7 @@ import { refreshToken } from './Scripts/login';
 import { Navigate } from 'react-router-dom';
 import NavBar from './Components/NavBar';
 import GameSelect from '../src/pages/GameSelect';
+import Teams from './pages/Teams';
 
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path='/login/' element={<Login />} />
           <Route path='/tracker/' element={<GameSelect />} />
+          <Route path='/teams/' element={<Teams />} />
           <Route path='/tracker/:gameID' element={<Tracker />} />
         </Routes>
       </Router>

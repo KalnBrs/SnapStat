@@ -2,6 +2,7 @@ const express = require('express')
 
 const { authenticateToken } = require('../Controllers/authControllers')
 const { findId, updateId, deleteUser, getUsers, findGames } = require('../Controllers/usersControllers')
+const { getAllTeamsUser } = require('../Controllers/teamsControllers')
 
 const router = express.Router()
 router.use(express.json())
@@ -14,6 +15,10 @@ router.get('/', getUsers)
 // Get all games for a user
 router.route('/games')
   .get(findGames)
+
+// Get all teams for a user
+router.route('/teams')
+  .get(getAllTeamsUser)
 
 // Get a specific user
 router.param('id', findId)
