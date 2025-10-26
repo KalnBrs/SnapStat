@@ -30,43 +30,74 @@ const getAllPlays = async (req, res) => {
 }
 
 const submitPlay = async (req, res) => {
+  if (!req.game) {
+    console.error('req.game is undefined');
+    return res.status(400).send('Missing game context');
+  }
+
+  const { play_type, start_yard, end_yard, down, distance, ball_on, result, possession_team_id, players, isTurnover, defSafety } = req.body;
+  if (!play_type || !result || !possession_team_id) {
+    console.error('Missing required play fields');
+    return res.status(400).send('Invalid play data');
+  }
+
+  const client = await pool.connect();
   try {
-    const client = await pool.connect()
-    const { play_type, start_yard, end_yard, down, distance, ball_on, result, possession_team_id, players, isTurnover, defSafety } = req.body
-    const isScoreHome = possession_team_id === req.game.home_team_id && !defTurnovers.includes(result)
-    let side_score = isScoreHome ? "home_score" : "away_score"
-    let score_add = 0
-    let newPossessionId = possession_team_id
-    if (result in points) score_add = points[result]
-    if (isTurnover) { 
-      newPossessionId = possession_team_id == req.game.home_team_id ? req.game.away_team_id : req.game.home_team_id 
-      await createDrive(req.game.game_id, newPossessionId, ball_on); // example start yard
+    const isScoreHome = possession_team_id === req.game.home_team_id && !defTurnovers.includes(result);
+    let side_score = isScoreHome ? "home_score" : "away_score";
+    let score_add = points[result] || 0;
+    let newPossessionId = possession_team_id;
+
+    if (isTurnover) {
+      newPossessionId = possession_team_id == req.game.home_team_id ? req.game.away_team_id : req.game.home_team_id;
+      await createDrive(req.game.game_id, newPossessionId, ball_on);
     }
+
     if (result === "Safety" || result === "Def Safety" || play_type == 'defense') {
       if (!defSafety) {
-        side_score = side_score == "home_score" ? "away_score" : "home_score"
+        side_score = side_score == "home_score" ? "away_score" : "home_score";
       }
     }
 
-    await client.query('BEGIN')
+    await client.query('BEGIN');
+
     const play = await client.query(
-      'INSERT INTO plays (drive_id, game_id, team_id, down, distance, start_yard, end_yard,  play_type, result, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, now()::timestamp) RETURNING *;',
-      [req.game.current_drive_id, req.game.game_id, possession_team_id, down, distance, start_yard, end_yard, play_type, result])
+      `INSERT INTO plays (drive_id, game_id, team_id, down, distance, start_yard, end_yard, play_type, result, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, now()::timestamp)
+       RETURNING *;`,
+      [req.game.current_drive_id, req.game.game_id, possession_team_id, down, distance, start_yard, end_yard, play_type, result]
+    );
 
-    const game = await client.query(`UPDATE games SET ${side_score} = ${side_score} + $1, down = $2, distance = $3, ball_on_yard = $4, possession_team_id = $5 WHERE game_id = $6 RETURNING *;`, [score_add, down, distance, ball_on, newPossessionId, req.game.game_id])
+    const game = await client.query(
+      `UPDATE games
+       SET ${side_score} = ${side_score} + $1,
+           down = $2,
+           distance = $3,
+           ball_on_yard = $4,
+           possession_team_id = $5
+       WHERE game_id = $6
+       RETURNING *;`,
+      [score_add, down, distance, ball_on, newPossessionId, req.game.game_id]
+    );
 
-    const updatesByPlayer = applyStatRules({ play_type, result, players })
+    const updatesByPlayer = applyStatRules({ play_type, result, players });
     for (const [playerId, updates] of Object.entries(updatesByPlayer)) {
       const { text, values } = buildStatSQL(playerId, req.game.game_id, updates);
       await client.query(text, values);
     }
 
-    await client.query('COMMIT;')
-    res.json({ game: game.rows[0], play: play.rows[0] })
+    await client.query('COMMIT');
+    res.json({ game: game.rows[0], play: play.rows[0] });
+
   } catch (err) {
-    res.sendStatus(500)
+    await client.query('ROLLBACK');
+    console.error('Error in submitPlay:', err);
+    if (!res.headersSent) res.sendStatus(500);
+  } finally {
+    client.release();
   }
-}
+};
+
 
 function buildStatSQL(player_id, game_id, updates) {
   const cols = updates.map(u => u.stat);

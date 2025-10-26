@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+@keyframes swipeGreen {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.swipe-green {
+  background: linear-gradient(90deg, #7DD181 30%, #4CAF50 60%, #7DD181 90%);
+  background-size: 200% 100%;
+  animation: swipeGreen 0.8s ease-in-out forwards;
+  color: white;
+}
+
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -39,14 +56,14 @@ h1 {
 
 button {
   border-radius: 8px;
-  border: 1px solid transparent;
+  border: 3px solid transparent;
   font-family: inherit;
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: #C08497;
 }
 button:focus,
 button:focus-visible {

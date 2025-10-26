@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import DropDown from './DropDown'
 
+import { useEffect } from 'react'
+
 import './PlaySelect.css'    
 import Button from './Button'
 import { useDispatch, useSelector } from 'react-redux'
@@ -27,7 +29,6 @@ function Pass({setFunc}) {
   const [twoPtSucc, setTwoPtSucc] = useState(false)
   const [twoPtFail, setTwoPtFail] = useState(false)
 
-
   const [retType, setRetType] = useState()
 
   const [incomplete, setIncomplete] = useState(false)
@@ -36,19 +37,46 @@ function Pass({setFunc}) {
   const awayRoster = useSelector(state => state.roster.away)
   const retCondition = useSelector(state => state.game.return)
   const penCondition = useSelector(state => state.game.penalty)
-  const offense = useSelector(state => state.game.offense)
+  const posId = useSelector(state => state.game.game.possession_team_id)
+  const gameCondition = useSelector(state => state.game.game)
   const dispatch = useDispatch()
 
-  const options = offense === "home" ? homeRoster : awayRoster;
-  const oppOption = offense === "home" ? awayRoster : homeRoster;
+  const [offense, setOffence] = useState("home")
+  const [options, setOptions] = useState(homeRoster)
+  const [oppOption, setOppOptions] = useState(homeRoster)
 
   const nodes = useSelector(state => state.node.offenseNode)
   const retNodes = useSelector(state => state.node.defenseNode)
   const penNodes = useSelector(state => state.node.penaltyNode)
 
+
   const currentDown = useSelector(state => state.game.game.down)
   const currentDistance = useSelector(state => state.game.game.distance)
   const currBallOnYard = useSelector(state => state.game.game.ball_on_yard)
+
+  useEffect(() => {
+    console.log("Switch")
+    // Clear selections whenever possession changes
+    setQBSelect(null);
+    setWRSelect(null);
+    setTackSelect(null);
+    setIntercepter(null);
+    setFumbleRecoverer(null);
+    setRetType(null);
+    setIncomplete(false);
+    setAutoFirst(false);
+    setTwoPtSucc(false);
+    setTwoPtFail(false);
+
+    console.log(posId)
+    setOffence(posId == gameCondition.home_team_id ? "home" : "away")
+    setOptions(offense === "home" ? homeRoster : awayRoster)
+    setOppOptions(offense === "home" ? awayRoster : homeRoster)
+    
+    // Also reset return/penalty if needed
+    dispatch(setReturn(false));
+    dispatch(setPenalty(false));
+  }, [offense, gameCondition]);
 
   function setDefault() {
     dispatch(setReturn(false))

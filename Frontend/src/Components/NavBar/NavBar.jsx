@@ -12,7 +12,6 @@ function NavBar() {
       <img src="" alt="" />
       <div className="ml-auto mr-10 ">
         {user.username != null ? <div> 
-          <a className="mx-4" href="/players">Players</a>
           <a className="mx-4" href="/teams">Teams</a>
           <a className="mx-4" href="/tracker">Game Select</a>
           <a className="mx-4" href="">{user.username}</a>

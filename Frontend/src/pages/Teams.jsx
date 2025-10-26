@@ -28,7 +28,7 @@ function Teams() {
   }, [reload])
 
   function viewTeam(team_id) {
-    navigate(`teams/${team_id}`)
+    navigate(`${team_id}`)
   }
 
   function editTeam(team) {

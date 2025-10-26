@@ -8,7 +8,8 @@ const statRules = {
       ],
       receiver: [
         { stat: 'receptions', value: 1 },
-        { stat: 'rec_yards', fromValue: true }
+        { stat: 'rec_yards', fromValue: true },
+        { stat: 'targets', value: 1}
       ],
       tackler: [{ stat: 'tackles', value: 1 }]
     },

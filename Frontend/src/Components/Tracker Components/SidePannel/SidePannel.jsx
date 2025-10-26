@@ -6,7 +6,7 @@ import './SidePannel.css'
 import { useDispatch, useSelector } from 'react-redux';
 import { setGame } from '../../../Features/game/gameSlice';
 import { setError } from '../../../Features/error/errorSlice';
-import { updateQuarter, updateTimeout } from '../../../Scripts/sideBarUtilities';
+import { flipPoss, updateQuarter, updateTimeout } from '../../../Scripts/sideBarUtilities';
 import AdjustModal from '../AdjustModal';
 
 const prefix = {
@@ -79,6 +79,13 @@ function SidePannel() {
     setShowAdjust(false)
   }
 
+  const flipPossesion = async () => {
+    const homeTeamId = homeTeam.team_id
+    const awayTeamId = awayTeam.team_id
+    const posId = gameState.possession_team_id
+    dispatch(setGame(await flipPoss(posId == homeTeamId ? awayTeamId : homeTeamId)))
+  }
+
   return (
     <>
     <ConfirmationModal
@@ -103,6 +110,7 @@ function SidePannel() {
       <button className='mt-5' onClick={() => handleOpenConfermation(homeTeam)} style={{backgroundColor: homeTeam?.color}}>{homeTeam?.abbreviation + ' Timeout'}</button>
       <button className='mt-5' onClick={() => handleOpenConfermation(awayTeam)} style={{backgroundColor: awayTeam?.color}}>{awayTeam?.abbreviation + ' Timeout'}</button>
       <button className='mt-5' onClick={() => handleAdjustOpen(awayTeam)} >Open Adjust Modal</button>
+      <button className='mt-5' onClick={() => flipPossesion()}>Flip Possesion</button>
     </div>
     <ConfirmationModal
       show={showConfirmation}

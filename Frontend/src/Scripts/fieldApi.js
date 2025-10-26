@@ -91,8 +91,6 @@ const fetchRosterData = async () => {
   const homeTeamId = state.game.game.home_team_id
   const awayTeamId = state.game.game.away_team_id
 
-  console.log('home' + homeTeamId)
-
   await fetchRoster(homeTeamId, "home")
   await fetchRoster(awayTeamId, "away")
 }

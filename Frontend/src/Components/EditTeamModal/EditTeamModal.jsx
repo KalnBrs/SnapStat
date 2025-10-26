@@ -13,6 +13,7 @@ function EditTeamModal({ show, onConfirm, onCancel, team }) {
 
   const [clearText, setClearText] = useState('Clear Team?');
   const [change, setChange] = useState(false)
+  const [animating, setAnimating] = useState(false);
 
   useEffect(() => {
     setTeamName(team?.team_name || '');
@@ -24,21 +25,32 @@ function EditTeamModal({ show, onConfirm, onCancel, team }) {
   if (!show) return null;
 
   async function onClear(e) {
-    e.preventDefault()
+    e.preventDefault();
     if (change) {
-      clearTeam(team)
-      setClearText('Clear Team?')
-      setChange(false)
+      // Clear the team
+      await clearTeam(team);
+  
+      // Trigger the "grow green" animation
+      setAnimating(true);
+  
+      // Reset text and animation after 1s
+      setTimeout(() => {
+        setClearText('Clear Team?');
+        setChange(false);
+        setAnimating(false);
+      }, 1000);
     } else {
-      setClearText("Are your sure?")
-      setChange(true)
-
+      setClearText("Are you sure?");
+      setChange(true);
+  
+      // Revert text after 2s
       setTimeout(() => {
         setClearText('Clear Team?');
         setChange(false);
       }, 2000);
     }
   }
+  
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -128,7 +140,16 @@ function EditTeamModal({ show, onConfirm, onCancel, team }) {
                 onChange={(e) => setCsvFile(e.target.files[0])}
                 className="text-black border-2 border-gray-400 rounded-lg w-60 mr-auto"
               />
-              <button type='button' className='ml-auto' onClick={onClear}>{clearText}</button>
+              <button
+                type='button'
+                onClick={onClear}
+                style={{backgroundColor: clearText == "Are you sure?" ? "red" : "gray"}}
+                className={`ml-auto transition-all duration-300 rounded px-2 py-1 ${
+                  animating ? 'swipe-green' : 'bg-gray-200 text-black'
+                }`}
+              >
+                {clearText}
+              </button>
             </div>
           </div>
 

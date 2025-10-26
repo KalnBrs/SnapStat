@@ -20,11 +20,14 @@ function Rush({ setFunc }) {
 
   const homeRoster = useSelector(state => state.roster.home);
   const awayRoster = useSelector(state => state.roster.away);
-  const offense = useSelector(state => state.game.offense);
   const retCondition = useSelector(state => state.game.return);
   const penCondition = useSelector(state => state.game.penalty);
   const dispatch = useDispatch();
 
+  const possID = useSelector(state => state.game.game.possession_team_id)
+  const gameCondition = useSelector(state => state.game.game)
+
+  const offense = possID == gameCondition.home_team_id ? "home" : "away"
   const options = offense === "home" ? homeRoster : awayRoster;
   const oppOption = offense === "home" ? awayRoster : homeRoster;
 

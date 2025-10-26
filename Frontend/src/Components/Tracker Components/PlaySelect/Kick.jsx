@@ -1,6 +1,6 @@
 import DropDown from "./DropDown"
 import Button from "./Button"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { setReturn, setPenalty } from "../../../Features/game/gameSlice"
 import { setError } from "../../../Features/error/errorSlice"
@@ -47,13 +47,18 @@ function Kick({setFunc}) {
   const awayRoster = useSelector(state => state.roster.away)
 
   const possID = useSelector(state => state.game.game.possession_team_id)
+  const gameCondition = useSelector(state => state.game.game)
 
-  const offense = useSelector(state => state.game.offense)
+  const offense = possID == gameCondition.home_team_id ? "home" : "away"
   const options = offense === "home" ? homeRoster : awayRoster;
   const oppOption = offense === "home" ? awayRoster : homeRoster;
 
   const currentDown = useSelector(state => state.game.game.down)
   const currentDistance = useSelector(state => state.game.game.distance)
+
+  useEffect(() => {
+
+  }, [])
 
   function setDefault(option) {
     dispatch(setReturn(option.value == 'punt' || option.value == 'kickoff'))

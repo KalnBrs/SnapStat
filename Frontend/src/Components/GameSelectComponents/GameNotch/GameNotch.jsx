@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import './GameNotch.css'
+import '../../../index.css'
 import { getTeam } from '../../../Scripts/gameSelectUtilities'
 import { useNavigate } from 'react-router-dom'
 
@@ -35,7 +35,7 @@ const GameNotch = ({item}) => {
   return (
     <div style={{"backgroundColor": "#F2E9E4"}} className='flex flex-right bg-gray-900 w-250 h-30 p-10 my-2 rounded-lg shadow-lg text-black items-center'>
       <div className='flex flex-right mr-auto items-center'>
-        <div className='w-5 h-5' style={{backgroundColor: awayTeam?.color}} />
+        <div className='w-5 h-5 rounded-xl' style={{backgroundColor: awayTeam?.color}} />
           <div>
             {awayTeam && (awayTeam.logo_url != null ? (<img src={awayTeam.logo_url} alt=""className='w-15 mx-2'/>) : <img src='/question-sign.png' className='w-15 mx-2'></img>)}
             <p>{awayTeam?.abbreviation}</p>
@@ -47,7 +47,7 @@ const GameNotch = ({item}) => {
         {homeTeam && (homeTeam.logo_url != null ? (<img src={homeTeam.logo_url} alt=""className='w-15 mx-2'/>) : <img src='/question-sign.png' className='w-15 mx-2'></img>)}
           <p>{homeTeam?.abbreviation}</p>
         </div>
-        <div className='w-5 h-5' style={{backgroundColor: homeTeam?.color}} />
+        <div className='w-5 h-5 rounded-xl' style={{backgroundColor: homeTeam?.color}} />
       </div>
       <div className='flex flex-right ml-auto mr-10 items-center'>
         <p className='mr-6'>Quarter {item.quarter}</p>
