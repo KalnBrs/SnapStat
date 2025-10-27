@@ -14,6 +14,7 @@ const getPlayersStats = async (req, res) => {
 
 const getPlayersStatsGame = async (req, res) => {
   try {
+    console.log(req.player.player_id, req.game.game_id)
     const result = await pool.query('SELECT * FROM player_stats WHERE player_id = $1 AND game_id = $2', [req.player.player_id, req.game.game_id])
     if (result.rows.length === 0) return res.sendStatus(404)
     res.json(result.rows[0])

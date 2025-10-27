@@ -1,6 +1,6 @@
 const pool = require('../Config/db')
 
-const allowedColumns = ['home_team_id', 'away_team_id', 'home_score', 'away_score', 'home_timeouts', 'away_timeouts', 'quarter', 'down', 'distance', 'ball_on_yard', 'possession_team_id', 'current_drive_id']
+const allowedColumns = ['home_team_id', 'away_team_id', 'home_score', 'away_score', 'home_timeouts', 'away_timeouts', 'quarter', 'down', 'distance', 'ball_on_yard', 'possession_team_id', 'current_drive_id', 'date', 'finished']
 
 const findGameId = async (req, res, next, value) => {
   try {

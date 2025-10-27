@@ -37,22 +37,27 @@ const GameNotch = ({item}) => {
       <div className='flex flex-right mr-auto items-center'>
         <div className='w-5 h-5 rounded-xl' style={{backgroundColor: awayTeam?.color}} />
           <div>
-            {awayTeam && (awayTeam.logo_url != null ? (<img src={awayTeam.logo_url} alt=""className='w-15 mx-2'/>) : <img src='/question-sign.png' className='w-15 mx-2'></img>)}
+            {awayTeam && (awayTeam.logo_url ? (<img src={awayTeam.logo_url} alt=""className='w-15 mx-2'/>) : <div className="w-15 h-15 rounded-full text-5xl font-extrabold flex items-center justify-center">?</div>)}
             <p>{awayTeam?.abbreviation}</p>
           </div>
         <p>{item.away_score}</p>
         <p className='mx-2'>vs</p>
         <p>{item.home_score}</p>
         <div>
-        {homeTeam && (homeTeam.logo_url != null ? (<img src={homeTeam.logo_url} alt=""className='w-15 mx-2'/>) : <img src='/question-sign.png' className='w-15 mx-2'></img>)}
+        {homeTeam && (homeTeam.logo_url != null ? (<img src={homeTeam.logo_url} alt=""className='w-15 mx-2'/>) : <div className="w-15 h-15 rounded-full text-5xl font-extrabold flex items-center justify-center">?</div>)}
           <p>{homeTeam?.abbreviation}</p>
         </div>
         <div className='w-5 h-5 rounded-xl' style={{backgroundColor: homeTeam?.color}} />
       </div>
       <div className='flex flex-right ml-auto mr-10 items-center'>
-        <p className='mr-6'>Quarter {item.quarter}</p>
+        {item.finished ? <p style={{color: "#317B22"}} className='mr-6 font-bold italic'>Finished</p> : <> 
+          <p className='mr-6'>Quarter {item.quarter}</p>
         <p className='mr-6'>{`${item.down + prefix[item.down]} & ${item.distance}`}</p>
-        <p>{item.ball_on_yard} yard line</p>
+        </>}
+        
+        <p>{item.date 
+          ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' })
+          : "N/A"}</p>
 
       </div>
       <button style={{"backgroundColor": "gray"}} className='text-white p-2' onClick={openGame}>Open Game</button>

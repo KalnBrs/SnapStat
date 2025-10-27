@@ -16,6 +16,22 @@ async function updateQuarter(quarter) {
   return await response.json();
 }
 
+async function updateFinished(value) {
+  const gamestate = store.getState().game.game
+  const user = store.getState().user.user
+  const response = await fetch(`http://localhost:8000/api/games/${gamestate.game_id}/state`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${user.accessToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      "finished": value
+    })
+  });
+  return await response.json();
+}
+
 async function flipPoss(poss_id) {
   const gamestate = store.getState().game.game
   const user = store.getState().user.user
@@ -48,4 +64,4 @@ async function updateTimeout(timeoutTeam, timeoutTo) {
   return await response.json();
 }
 
-export {updateQuarter, updateTimeout, flipPoss}
+export {updateQuarter, updateTimeout, flipPoss, updateFinished}

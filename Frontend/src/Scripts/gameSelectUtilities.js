@@ -1,5 +1,21 @@
 import store from "../Store/store"
 
+async function getPlays(game_id) {
+  const user = store.getState().user.user
+  const result = await fetch(`http://localhost:8000/api/games/${game_id}/plays`, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${user.accessToken}`,
+    }
+  })
+
+  if (!result.ok) {
+    throw new Error("Error in getting plays")
+  }
+
+  return await result.json();
+}
+
 async function getTeam(team_id) {
   const user = store.getState().user.user
   const result = await fetch(`http://localhost:8000/api/teams/${team_id}`, {
@@ -10,13 +26,13 @@ async function getTeam(team_id) {
   })
 
   if (!result.ok) {
-    console.error("HTTP request did not work")
+    throw new Error("Error in getting team")
   }
 
   return await result.json();
 }
 
-async function startGame(homeTeamId, awayTeamId) {
+async function startGame(homeTeamId, awayTeamId, date) {
   const user = store.getState().user.user
   const result = await fetch(`http://localhost:8000/api/games`, {
     method: "POST",
@@ -26,7 +42,8 @@ async function startGame(homeTeamId, awayTeamId) {
     },
     body: JSON.stringify({
       "home_team_id": homeTeamId,
-      "away_team_id": awayTeamId
+      "away_team_id": awayTeamId,
+      "date": date
     })
   })
   
@@ -59,4 +76,20 @@ async function startGame(homeTeamId, awayTeamId) {
   return await result2.json()
 }
 
-export { getTeam, startGame }
+async function getGameOnID(game_id) {
+  const user = store.getState().user.user
+  const response = await fetch(`http://localhost:8000/api/games/${game_id}`, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${user.accessToken}`,
+    }
+  })
+
+  if (!response.ok) {
+    console.error("getGameOnID caused an error")
+  }
+
+  return await response.json();
+}
+
+export { getTeam, startGame, getGameOnID, getPlays }

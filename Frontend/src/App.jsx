@@ -12,6 +12,7 @@ import NavBar from './Components/NavBar';
 import GameSelect from '../src/pages/GameSelect';
 import Teams from './pages/Teams';
 import TeamView from './pages/TeamView';
+import Stats from './pages/Stats';
 
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
           <Route path='/teams/:teamID' element={<TeamView />} />
           <Route path='/tracker/' element={<GameSelect />} />
           <Route path='/tracker/:gameID' element={<Tracker />} />
+          <Route path='/stats/:gameID' element={<Stats />} />
         </Routes>
       </Router>
     </>

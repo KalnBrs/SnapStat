@@ -5,7 +5,7 @@ import { getRoster, getTeam } from '../Scripts/teamViewApi';
 import EditTeamModal from '../Components/EditTeamModal'
 import '../index.css';
 
-const GameCard = ({ game }) => {
+const GameCard = ({ game, teamID }) => {
   const prefix = { 1: 'st', 2: 'nd', 3: 'rd', 4: 'th' };
 
   const [homeTeam, setHomeTeam] = useState(null);
@@ -18,6 +18,20 @@ const GameCard = ({ game }) => {
     }
     init();
   }, [game.home_team_id, game.away_team_id]);
+
+  // Only compute result if game is finished
+  let result = "";
+  if (game.finished) {
+    if ((game.home_team_id == Number(teamID) && game.home_score > game.away_score) ||
+        (game.away_team_id == Number(teamID) && game.away_score > game.home_score)) {
+      result = "Win";
+    } else if ((game.home_team_id == Number(teamID) && game.home_score < game.away_score) ||
+               (game.away_team_id == Number(teamID) && game.away_score < game.home_score)) {
+      result = "Loss";
+    } else {
+      result = "Tie";
+    }
+  }
 
   return (
     <div className="flex flex-col md:flex-row justify-between items-center bg-gray-800 p-4 rounded-md shadow-md hover:scale-102 transition-transform duration-200 text-white">
@@ -66,15 +80,26 @@ const GameCard = ({ game }) => {
 
       {/* Game Info */}
       <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 mt-2 md:mt-0 text-gray-300">
-        {game.quarter ? <span>Quarter {game.quarter}</span> : null}
-        {game.down > 0 && (
-          <span>{`${game.down}${prefix[game.down] || 'th'} & ${game.distance}`}</span>
+        {game.finished ? (
+          <span className={`font-bold ${result === "Win" ? "text-green-400" : result === "Loss" ? "text-red-500" : "text-yellow-300"}`}>
+            {result}
+          </span>
+        ) : (
+          <>
+            {game.quarter ? <span>Quarter {game.quarter}</span> : null}
+            {game.down > 0 && (
+              <span>{`${game.down}${prefix[game.down] || 'th'} & ${game.distance}`}</span>
+            )}
+            
+          </>
         )}
-        {game.ball_on_yard > 0 && <span>{`${game.ball_on_yard} yard line`}</span>}
+        <span>{game.date ? new Date(game.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' }) : "N/A"}</span>
       </div>
     </div>
   );
 };
+
+
 
 function TeamView() {
   const [team, setTeam] = useState(null);
@@ -90,11 +115,12 @@ function TeamView() {
     async function init() {
       try {
         const allGames = await getGames();
-        const teamGames = allGames.filter(
-          (game) => game.home_team_id == teamID || game.away_team_id == teamID
-        );
+        const teamGames = allGames
+          .filter((game) => game.home_team_id == teamID || game.away_team_id == teamID)
+          .sort((a, b) => new Date(b.date) - new Date(a.date)); 
+  
         setRecGame(teamGames);
-
+  
         setTeam(await getTeam(teamID));
         setRoster(await getRoster(teamID));
       } catch (err) {
@@ -103,9 +129,10 @@ function TeamView() {
         setLoading(false);
       }
     }
-
+  
     init();
   }, [teamID]);
+  
 
   if (loading) {
     return (
@@ -208,6 +235,7 @@ function TeamView() {
                   <GameCard
                     key={game.game_id}
                     game={game}
+                    teamID={team.team_id} // pass the current team ID
                     onOpenGame={(g) => navigate(`/games/${g.game_id}`)}
                     onOpenStats={(g) => navigate(`/stats/${g.game_id}`)}
                   />

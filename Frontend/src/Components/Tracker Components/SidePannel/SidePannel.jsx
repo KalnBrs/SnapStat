@@ -6,8 +6,9 @@ import './SidePannel.css'
 import { useDispatch, useSelector } from 'react-redux';
 import { setGame } from '../../../Features/game/gameSlice';
 import { setError } from '../../../Features/error/errorSlice';
-import { flipPoss, updateQuarter, updateTimeout } from '../../../Scripts/sideBarUtilities';
+import { flipPoss, updateFinished, updateQuarter, updateTimeout } from '../../../Scripts/sideBarUtilities';
 import AdjustModal from '../AdjustModal';
+import DateEdit from '../DateEdit';
 
 const prefix = {
   1: 'st',
@@ -30,6 +31,9 @@ function SidePannel() {
 
   const [selectedValue, setSelectedValue] = useState(gameState.quarter)
   const [showQuarter, setShowQuarter] = useState(false)
+
+  const [showFinished, setShowFinished] = useState(false)
+  const [showDate, setShowDate] = useState(false)
 
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
@@ -86,6 +90,11 @@ function SidePannel() {
     dispatch(setGame(await flipPoss(posId == homeTeamId ? awayTeamId : homeTeamId)))
   }
 
+  const confirmFinishModal = async () => {
+    dispatch(setGame(await updateFinished(!gameState.finished)))
+    setShowFinished(false)
+  }
+
   return (
     <>
     <ConfirmationModal
@@ -107,11 +116,23 @@ function SidePannel() {
         <option value="4">4th</option>
       </select>
       <button className='quarterButton' onClick={handleQuarterOpen}>Update Quarter</button> 
-      <button className='mt-5' onClick={() => handleOpenConfermation(homeTeam)} style={{backgroundColor: homeTeam?.color}}>{homeTeam?.abbreviation + ' Timeout'}</button>
-      <button className='mt-5' onClick={() => handleOpenConfermation(awayTeam)} style={{backgroundColor: awayTeam?.color}}>{awayTeam?.abbreviation + ' Timeout'}</button>
-      <button className='mt-5' onClick={() => handleAdjustOpen(awayTeam)} >Open Adjust Modal</button>
-      <button className='mt-5' onClick={() => flipPossesion()}>Flip Possesion</button>
+      <button className='mt-3' onClick={() => handleOpenConfermation(homeTeam)} style={{backgroundColor: homeTeam?.color}}>{homeTeam?.abbreviation + ' Timeout'}</button>
+      <button className='mt-3' onClick={() => handleOpenConfermation(awayTeam)} style={{backgroundColor: awayTeam?.color}}>{awayTeam?.abbreviation + ' Timeout'}</button>
+      <button className='mt-3' onClick={() => handleAdjustOpen(awayTeam)} >Open Adjust Modal</button>
+      <button className='mt-3' onClick={() => flipPossesion()}>Flip Possesion</button>
+      <div className='break' />
+      <button style={{backgroundColor: '#3F2A2B'}} className='' onClick={() => setShowDate(true)}>Change Date</button>
+      {gameState.finished ? 
+        <button className='mt-2' style={{backgroundColor: 'green'}} onClick={() => setShowFinished(true)}>Restart Game</button>  
+        : <button className='mt-2' style={{backgroundColor: '#E15554'}} onClick={() => setShowFinished(true)}>Finish Game</button>}
     </div>
+    <ConfirmationModal
+      show={showFinished}
+      onConfirm={confirmFinishModal}
+      onCancel={() => setShowFinished(false)}
+      title={gameState.finished ? "Restart Game" : "Finish Game"}
+      message={gameState.finished ? "Are you sure you want to restart" : "Are you sure you want to finish the game"}
+    />
     <ConfirmationModal
       show={showConfirmation}
       onConfirm={handleConfirm}
@@ -122,6 +143,10 @@ function SidePannel() {
     <AdjustModal
       show={showAdjust}
       onCancel={handleAdjustClose}
+    />
+    <DateEdit 
+      show={showDate}
+      onCancel={() => setShowDate(false)}
     />
   </>
   )

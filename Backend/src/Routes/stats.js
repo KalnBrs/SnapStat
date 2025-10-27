@@ -13,11 +13,11 @@ router.param('player_id', findPlayerId)
 router.param('game_id', findGameId)
 router.param('team_id', findTeamId)
 
-router.route('/:player_id')
-  .get(getPlayersStats)
-
 router.route('/:player_id/:game_id')
   .get(getPlayersStatsGame)
+
+router.route('/:player_id')
+  .get(getPlayersStats)
 
 router.route('/teams')
   .get(getTeamStats)
