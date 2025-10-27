@@ -21,10 +21,10 @@ export default function PlaySummary({ plays, homeTeam, awayTeam }) {
               <p className="ml-2 mr-auto">Start Yard: {p.start_yard}</p>
               <p className="mr-2 ml-auto">End Yard: {p.end_yard}</p>
             </div>
-            <div className="flex flex-row">
+            <div className="flex flex-row items-center">
               <p className="ml-2 mr-auto">To: {`${p.down + prefix[p.down]} & ${p.distance}`}</p>
               <div style={{backgroundColor: p.team_id == homeTeam.team_id ? homeTeam.color : awayTeam.color}} className="w-5 h-5 rounded-lg"></div>
-              <p className="mr-2 ml-auto">{p.team_id == homeTeam.team_id ? homeTeam.team_name : awayTeam.team_name}</p>
+              <p className="mr-2 ml-1 text-sm ">{p.team_id == homeTeam.team_id ? homeTeam.team_name : awayTeam.team_name}</p>
             </div>
             <p></p>
           </li>

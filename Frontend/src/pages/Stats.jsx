@@ -28,45 +28,58 @@ function StatsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let interval;
+  
     async function fetchData() {
       const gameData = await getGameOnID(gameID);
       setGame(gameData);
+  
       try {
         setHomeTeam(await getTeam(gameData.home_team_id));
-      } catch (err) {
-        setHomeTeam([])
+      } catch {
+        setHomeTeam([]);
       }
+  
       try {
         setAwayTeam(await getTeam(gameData.away_team_id));
-      } catch (err) {
-        setAwayTeam([])
+      } catch {
+        setAwayTeam([]);
       }
+  
       try {
         setHomeRoster(await getRoster(gameData.home_team_id));
-      } catch (err) {
-        setHomeRoster([])
+      } catch {
+        setHomeRoster([]);
       }
+  
       try {
         setAwayRoster(await getRoster(gameData.away_team_id));
-      } catch (err) {
-        setAwayRoster([])
+      } catch {
+        setAwayRoster([]);
       }
-
+  
       try {
-        const plays = await getPlays(gameData.game_id)
-        plays.sort((a, b) => b.play_id - a.play_id)
-        setGamePlays(plays)
-        const shortPlays = plays.slice(0, 5)
-        setPlays(shortPlays)
+        const plays = await getPlays(gameData.game_id);
+        plays.sort((a, b) => b.play_id - a.play_id);
+        const shortPlays = plays.slice(0, 5);
+        setGamePlays(plays);
+        setPlays(shortPlays);
       } catch (err) {
-        console.log(err.message)
-        setPlays([])
+        console.log(err.message);
+        setPlays([]);
       }
-
+  
       setLoading(false);
     }
-    fetchData();
+  
+    fetchData(); // run immediately once
+  
+    interval = setInterval(fetchData, 4000); // run again every 4 seconds
+  
+    // cleanup when component unmounts or gameID changes
+    return () => clearInterval(interval);
   }, [gameID]);
+  
 
   if (loading) return <p className="text-white">Loading...</p>;
 
@@ -111,11 +124,6 @@ function StatsPage() {
           awayTeam: awayTeam
         }} />
         <PlaySummary plays={plays} homeTeam={homeTeam} awayTeam={awayTeam} />
-        <MomentumChart
-          plays={gamePlays} // array of play objects
-          homeTeam={homeTeam}
-          awayTeam={awayTeam}
-        />
         <AnnouncerNotes />
       </div>
     </div>
