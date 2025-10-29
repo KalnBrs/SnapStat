@@ -123,6 +123,7 @@ A full walkthrough is available on [YouTube Demo (3 minutes)](https://youtu.be/G
 ## 🧑‍💻 Creator
 
 **Developed by [Kaelan Brose](https://github.com/KalnBrs)**
+
 Built for the Congressional App Challenge 2025, inspired by the need for accessible and professional-level stat tracking tools for high school sports.
 
 --- 
