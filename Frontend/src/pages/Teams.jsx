@@ -46,9 +46,8 @@ function Teams() {
     setReload((r) => !r)
   }
 
-  if (!ready) return <p>Loading...</p>
+  if (!ready) return <p className='mt-20'>Loading...</p>
 
-  // 🔍 Filter teams by search text
   const filteredTeams = teams.filter((team) => {
     if (!search.trim()) return true
     const text = search.toLowerCase()
@@ -74,7 +73,7 @@ function Teams() {
       />
 
       {/* Header + Create Button */}
-      <div className='flex flex-row my-10 items-center px-10'>
+      <div className='flex flex-row my-10 items-center px-10 mt-30'>
         <p className='text-4xl font-semibold ml-70 mr-auto'>My Teams:</p>
         <button
           onClick={() => setShowCreate(true)}

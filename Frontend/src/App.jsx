@@ -36,20 +36,22 @@ function App() {
   if (!ready) return null;
 
   return (
-    <>
-      <NavBar />
-      <Router>
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/login/' element={<Login />} />
-          <Route path='/teams/' element={<Teams />} />
-          <Route path='/teams/:teamID' element={<TeamView />} />
-          <Route path='/tracker/' element={<GameSelect />} />
-          <Route path='/tracker/:gameID' element={<Tracker />} />
-          <Route path='/stats/:gameID' element={<Stats />} />
-        </Routes>
-      </Router>
-    </>
+    <div className='w-[99.1vw]'>
+        <NavBar />
+        <div className=' mt-10'>
+        <Router>
+          <Routes>
+            <Route path='/' element={<Home />} />
+            <Route path='/login/' element={<Login />} />
+            <Route path='/teams/' element={<Teams />} />
+            <Route path='/teams/:teamID' element={<TeamView />} />
+            <Route path='/tracker/' element={<GameSelect />} />
+            <Route path='/tracker/:gameID' element={<Tracker />} />
+            <Route path='/stats/:gameID' element={<Stats />} />
+          </Routes>
+        </Router>
+        </div>
+    </div>
   )
 }
 

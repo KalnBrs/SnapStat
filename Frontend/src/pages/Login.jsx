@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { logIn } from "../Scripts/login";
 import store from "../Store/store";
-import { setUser } from "../Features/user/userSlice";
+import { setAccessToken, setUser } from "../Features/user/userSlice";
 import { useSelector } from "react-redux";
 import '../index.css';
 
@@ -36,7 +36,8 @@ function Login() {
       username: result.user.username,
       role: result.user.role
     }));
-    navigate('/tracker/');
+    store.dispatch(setAccessToken(result.accessToken))
+    navigate("/tracker/")
   };
 
   return (

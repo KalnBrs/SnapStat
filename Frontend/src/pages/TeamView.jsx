@@ -34,7 +34,7 @@ const GameCard = ({ game, teamID }) => {
   }
 
   return (
-    <div className="flex flex-col md:flex-row justify-between items-center bg-gray-800 p-4 rounded-md shadow-md hover:scale-102 transition-transform duration-200 text-white">
+    <div className="flex flex-col md:flex-row justify-between items-center bg-gray-800 p-4 rounded-md shadow-md hover:scale-102 transition-transform duration-200 text-white mb-2">
       
       <div className="flex items-center gap-4 md:gap-6">
         {/* Away Team */}
@@ -151,14 +151,14 @@ function TeamView() {
   }
 
   return (
-    <>
+    <div className=''>
       <EditTeamModal
         show={showEdit}
         onConfirm={() => setShowEdit(false)}
         onCancel={() => setShowEdit(false)}
         team={team}
       />
-      <div className="w-11/12 md:w-10/12 mx-auto mt-10 p-6 bg-[#242424] text-white min-h-screen rounded-lg shadow-lg">
+      <div className="w-full mx-auto mt-10 p-6 bg-[#242424] text-white min-h-screen rounded-lg shadow-lg">
         <div className="flex flex-row items-center mb-10">
           {team.logo_url ? (
             <img
@@ -245,7 +245,7 @@ function TeamView() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

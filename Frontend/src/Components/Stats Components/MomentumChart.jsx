@@ -1,134 +1,186 @@
-import React, { useMemo } from "react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  ResponsiveContainer,
-  Tooltip,
-  CartesianGrid,
-  ReferenceLine,
-} from "recharts";
+import { motion } from "framer-motion";
 
-export default function MomentumChart({ plays, homeTeam, awayTeam }) {
-  const momentumData = useMemo(() => {
-    if (!plays || !homeTeam || !awayTeam) return [];
 
-    let homeMomentum = 0;
-    let awayMomentum = 0;
-    const history = [];
-    const windowSize = 10;
+export default function MomentumBar({ plays, homeTeam, awayTeam }) {
+  if (!plays?.length || !homeTeam || !awayTeam) return null;
 
-    return plays.map((play, index) => {
-      let delta = play.yards_gained / 10;
-      const result = play.result?.toLowerCase() || "";
+  const momentumScore = calculateMomentumFromPlays(
+    plays,
+    homeTeam.team_id,
+    awayTeam.team_id
+  );
 
-      if (result.includes("touchdown")) delta += 5;
-      if (result.includes("interception") || result.includes("fumble")) delta -= 5;
-      if (["pass", "run"].includes(play.play_type?.toLowerCase())) delta += 0.5;
+  const maxMomentum = 100;
 
-      if (play.team_id === homeTeam.id) homeMomentum += delta;
-      else if (play.team_id === awayTeam.id) awayMomentum += delta;
-
-      history.push({ homeMomentum, awayMomentum });
-      if (history.length > windowSize) history.shift();
-
-      const avgHome = history.reduce((a, b) => a + b.homeMomentum, 0) / history.length;
-      const avgAway = history.reduce((a, b) => a + b.awayMomentum, 0) / history.length;
-
-      return {
-        minute: index + 1, // can map to real time later
-        momentum: avgHome - avgAway,
-      };
-    });
-  }, [plays, homeTeam, awayTeam]);
+  // Convert to 0–100% scale
+  const normalized = ((momentumScore + maxMomentum) / (2 * maxMomentum)) * 100;
+  const homePercent = Math.round(normalized);
+  const awayPercent = 100 - homePercent;
 
   return (
-    <div className="bg-[#1e1e1e] p-4 rounded-xl shadow-lg border border-[#333]">
-      <h2 className="text-white text-lg font-semibold mb-3 text-center">
-        Momentum Flow
-      </h2>
+    <div className="flex flex-col items-center w-full my-6">
+      {/* Bar Container */}
+      <div className="relative w-3/4 h-10 bg-gray-800 rounded-full overflow-hidden shadow-lg border border-gray-700">
+        {/* Away side (left) */}
+        <motion.div
+          className="absolute left-0 top-0 h-full"
+          style={{ backgroundColor: awayTeam.color }}
+          animate={{ width: `${awayPercent}%` }}
+          transition={{ type: "spring", stiffness: 80, damping: 15 }}
+        />
+        {/* Home side (right) */}
+        <motion.div
+          className="absolute right-0 top-0 h-full"
+          style={{ backgroundColor: homeTeam.color }}
+          animate={{ width: `${homePercent}%` }}
+          transition={{ type: "spring", stiffness: 80, damping: 15 }}
+        />
 
-      <ResponsiveContainer width="100%" height={250}>
-        <AreaChart data={momentumData}>
-          <defs>
-            {/* Gradient for positive (home) */}
-            <linearGradient id="positiveMomentum" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={homeTeam.color} stopOpacity={0.6} />
-              <stop offset="100%" stopColor={homeTeam.color} stopOpacity={0} />
-            </linearGradient>
+        {/* Center Line */}
+        <div className="absolute left-1/2 top-0 bottom-0 w-[2px] bg-gray-500 opacity-70" />
 
-            {/* Gradient for negative (away) */}
-            <linearGradient id="negativeMomentum" x1="0" y1="1" x2="0" y2="0">
-              <stop offset="0%" stopColor={awayTeam.color} stopOpacity={0.6} />
-              <stop offset="100%" stopColor={awayTeam.color} stopOpacity={0} />
-            </linearGradient>
-          </defs>
+        {/* Percentage Text Overlay */}
+        <div className="absolute inset-0 flex justify-between px-4 items-center text-sm font-semibold">
+          <span className="text-white drop-shadow-md">{awayPercent}%</span>
+          <span className="text-white drop-shadow-md">{homePercent}%</span>
+        </div>
+      </div>
 
-          <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
-          <XAxis
-            dataKey="minute"
-            stroke="#888"
-            tick={{ fill: "#ccc", fontSize: 12 }}
-            tickLine={false}
-          />
-          <YAxis
-            stroke="#888"
-            tick={{ fill: "#ccc", fontSize: 12 }}
-            tickLine={false}
-            domain={["auto", "auto"]}
-            label={{
-              value: "Momentum",
-              angle: -90,
-              position: "insideLeft",
-              fill: "#aaa",
-              fontSize: 12,
-            }}
-          />
-          <Tooltip
-            contentStyle={{ backgroundColor: "#222", border: "none", color: "#fff" }}
-            formatter={(value) => [`${value.toFixed(2)}`, "Momentum"]}
-          />
-          <ReferenceLine y={0} stroke="#666" strokeWidth={1} />
-
-          {/* Single line, fills above/below */}
-          <Area
-            type="monotone"
-            dataKey="momentum"
-            stroke="#fff"
-            fillOpacity={1}
-            fill="url(#positiveMomentum)"
-            isAnimationActive={false}
-            dot={false}
-          />
-          <Area
-            type="monotone"
-            dataKey="momentum"
-            stroke="#fff"
-            fillOpacity={1}
-            fill="url(#negativeMomentum)"
-            isAnimationActive={false}
-            dot={false}
-          />
-        </AreaChart>
-      </ResponsiveContainer>
-
-      <div className="flex justify-between text-sm text-gray-400 mt-2">
+      {/* Labels */}
+      <div className="flex justify-between w-3/4 mt-3 text-gray-300 text-sm font-semibold">
         <div className="flex items-center gap-2">
           <div
             className="w-3 h-3 rounded-full"
             style={{ backgroundColor: awayTeam.color }}
           />
-          <span>{awayTeam.abbreviation}</span>
+          {awayTeam.abbreviation}
         </div>
+
+        <p className="text-white">
+          {momentumScore > 10
+            ? `${homeTeam.abbreviation} Momentum`
+            : momentumScore < -10
+            ? `${awayTeam.abbreviation} Momentum`
+            : "Even Game"}
+        </p>
+
         <div className="flex items-center gap-2">
+          {homeTeam.abbreviation}
           <div
             className="w-3 h-3 rounded-full"
             style={{ backgroundColor: homeTeam.color }}
           />
-          <span>{homeTeam.abbreviation}</span>
         </div>
       </div>
     </div>
   );
 }
+
+// Helper Function
+function calculateMomentumFromPlays(plays, homeTeamId, awayTeamId) {
+  let score = 0;
+  const maxMomentum = 100;
+
+  plays.forEach(play => {
+    let delta = 0;
+    const result = play.result?.trim();
+    const yards = (play.end_yard - play.start_yard) || 0;
+
+    // ✅ Yardage always contributes slightly
+    delta += yards * 0.25;
+
+    switch (result) {
+      // --- Big scoring plays ---
+      case "Offensive Touchdown":
+      case "Touchdown":
+      case "On-side Touchdown":
+        delta += 20;
+        break;
+
+      case "Pick-Six":
+      case "Scoop and Score":
+      case "Blocked punt TD":
+      case "Blocked kick TD":
+        delta += 25; // big defensive/special teams momentum
+        break;
+
+      // --- Conversions ---
+      case "2pt_made":
+      case "Extra Point Made":
+        delta += 4;
+        break;
+      case "2pt_missed":
+      case "Extra Point Missed":
+      case "Extra Point Blocked":
+      case "Blocked extra TD":
+        delta -= 4;
+        break;
+
+      // --- Field Goals ---
+      case "Field Goal Made":
+        delta += 10;
+        break;
+      case "Field Goal Missed":
+      case "Field Goal Blocked":
+        delta -= 8;
+        break;
+
+      // --- Safeties ---
+      case "Safety":
+      case "Def Safety":
+        delta += 15;
+        break;
+
+      // --- Turnovers ---
+      case "Interception":
+        delta -= 18;
+        break;
+      case "Fumble":
+      case "Fumble Lost":
+        delta -= 15;
+        break;
+      case "Offensive Recovery":
+        delta += 6;
+        break;
+
+      // --- Kick/Punt Results ---
+      case "Kick Return":
+      case "Punt Return":
+        delta += 2;
+        break;
+      case "Fair Catch":
+      case "Touchback":
+        delta += 0;
+        break;
+      case "Punt Blocked":
+        delta -= 10;
+        break;
+      case "On-side":
+        delta += 6;
+        break;
+
+      // --- Routine Offensive Plays ---
+      case "Completion":
+        delta += 3;
+        break;
+      case "Incomplete":
+        delta -= 1;
+        break;
+      case "Tackle":
+        delta -= 2;
+        break;
+
+      default:
+        // no momentum swing for unrecognized results
+        break;
+    }
+
+    // Assign delta to home or away
+    if (play.team_id === homeTeamId) score += delta;
+    else if (play.team_id === awayTeamId) score -= delta;
+  });
+
+  // Clamp between -maxMomentum and +maxMomentum
+  return Math.max(-maxMomentum, Math.min(score, maxMomentum));
+}
+

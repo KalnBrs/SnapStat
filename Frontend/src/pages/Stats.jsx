@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { getGameOnID, getPlays, getTeam } from '../Scripts/gameSelectUtilities';
 import { getRoster } from '../Scripts/teamViewApi';
 import { useParams } from 'react-router-dom';
+import TeamComparison from '../Components/Stats Components/TeamComparison';
 
 function StatsPage() {
   const { gameID } = useParams()
@@ -84,7 +85,7 @@ function StatsPage() {
   if (loading) return <p className="text-white">Loading...</p>;
 
   return (
-    <div className="bg-[#242424] text-white min-h-screen p-6 flex flex-row space-x-6">
+    <div className="bg-[#242424] text-white min-h-screen p-6 flex flex-row space-x-6 w-full">
       {/* Left/Main Section */}
       <div className="flex-1 space-y-6">
         <div className="flex justify-between items-center">
@@ -123,7 +124,9 @@ function StatsPage() {
           homeTeam: homeTeam,
           awayTeam: awayTeam
         }} />
+        <MomentumChart plays={gamePlays} homeTeam={homeTeam} awayTeam={awayTeam} />
         <PlaySummary plays={plays} homeTeam={homeTeam} awayTeam={awayTeam} />
+        <TeamComparison homeTeam={homeTeam} awayTeam={awayTeam} gameID={gameID} />
         <AnnouncerNotes />
       </div>
     </div>

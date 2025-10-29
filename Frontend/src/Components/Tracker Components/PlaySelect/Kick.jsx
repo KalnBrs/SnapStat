@@ -128,10 +128,6 @@ function Kick({setFunc}) {
       ...playData
     }
     const newDown = calculateKickDown(downData)
-    
-    console.log(players)
-    console.log(resultData)
-    console.log(newDown)
 
     endYard = (retNodes.End.x - 50)/10
     if (onside) {

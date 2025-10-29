@@ -50,7 +50,7 @@ const GameNotch = ({item}) => {
         <div className='w-5 h-5 rounded-xl' style={{backgroundColor: homeTeam?.color}} />
       </div>
       <div className='flex flex-right ml-auto mr-10 items-center'>
-        {item.finished ? <p style={{color: "#317B22"}} className='mr-6 font-bold italic'>Finished</p> : <> 
+        {item.finished ? <p style={{color: "#417B5A"}} className='mr-6 italic'>Finished</p> : <> 
           <p className='mr-6'>Quarter {item.quarter}</p>
         <p className='mr-6'>{`${item.down + prefix[item.down]} & ${item.distance}`}</p>
         </>}

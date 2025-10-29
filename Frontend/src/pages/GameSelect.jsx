@@ -4,29 +4,36 @@ import { getGames } from '../Scripts/login';
 
 import GameNotch from '../Components/GameSelectComponents/GameNotch';
 import CreateGameModal from '../Components/CreateGameModal';
+import { useSelector } from 'react-redux';
 
 function GameSelect() {
   const [games, setGames] = useState([]);
   const [ready, setReady] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
-  useEffect(() => {
-    async function init() {
-      const retGames = await getGames();
+  const user = useSelector(state => state.user.user)
 
-      const sortedGames = retGames.sort((a, b) => new Date(b.date) - new Date(a.date));
+  
+useEffect(() => {
+  if (!user?.accessToken) return; // wait until token exists
 
-      setGames(sortedGames);
-      setReady(true);
-    }
-    init();
-  }, []);
+  const init = async () => {
+    const retGames = await getGames(user.accessToken);
+    const sortedGames = retGames.sort((a, b) => new Date(b.date) - new Date(a.date));
+    setGames(sortedGames);
+    setReady(true);
+  };
+
+  init();
+}, [user?.accessToken]); 
 
   function handleClose() {
     setShowCreate(false);
   }
-
-  if (!ready) return <p>Loading...</p>;
+  
+  if (user.username && !ready) return <p className='mt-15'>please reload</p>;
+  if (!ready) return <p className='mt-15'>Loading...</p>;
 
   return (
     <>

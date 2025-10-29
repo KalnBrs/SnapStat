@@ -10,7 +10,7 @@ function Tracker() {
   const { gameID } = useParams()
 
   return (
-    <div className='w-9/12 flex justify-self-center flex-col mt-15'>
+    <div className='w-9/12 flex justify-self-center flex-col mt-45'>
       <Error />
       <div className='flex flex-row'>
         <div className='pr-10 '>

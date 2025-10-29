@@ -58,6 +58,17 @@ async function logIn(username, password) {
   return await response.json();
 }
 
+async function logOut() {
+  const res = await fetch('http://localhost:8000/api/auth/logout', {
+    method: 'POST',
+    credentials: 'include'
+  });
+
+  if (!res.ok) {
+    throw new Error('Logout failed');
+  }
+}
+
 async function refreshToken() {
   const res = await fetch('http://localhost:8000/api/auth/refresh', {
     method: 'POST',
@@ -87,4 +98,4 @@ async function refreshToken() {
   store.dispatch(setUser(userData))
 }
 
-export { logIn, refreshToken, getGames, getTeams }
+export { logIn, refreshToken, getGames, getTeams, logOut }

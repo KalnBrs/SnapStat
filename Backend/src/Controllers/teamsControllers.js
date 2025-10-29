@@ -13,6 +13,7 @@ const findTeamId = async (req, res, next, value) => {
     req.team = result.rows[0]
     next()
   } catch (err) {
+    console.log(err)
     res.sendStatus(500)
   }
 }

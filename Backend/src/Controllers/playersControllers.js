@@ -5,11 +5,13 @@ const redisClient = require('../Config/redisClient')
 
 const findPlayerId = async (req, res, next, value) => {
   try {
+
     const result = await pool.query('SELECT * FROM players WHERE player_id = $1', [value])
     if (result.rows.length === 0) return res.sendStatus(404)
     req.player = result.rows[0]
     next()
   } catch (err) {
+    console.log(err)
     res.sendStatus(500)
   }
 }

@@ -9,6 +9,7 @@ const findGameId = async (req, res, next, value) => {
     req.game = result.rows[0]
     next()
   } catch (err) {
+    console.log(err)
     res.sendStatus(500)
   }
 }

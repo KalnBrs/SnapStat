@@ -92,4 +92,20 @@ async function getGameOnID(game_id) {
   return await response.json();
 }
 
-export { getTeam, startGame, getGameOnID, getPlays }
+async function getTeamsGameData(game_id) {
+  const user = store.getState().user.user
+  const response = await fetch(`http://localhost:8000/api/stats/teams/${game_id}`, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${user.accessToken}`,
+    }
+  })
+
+  if (!response.ok) {
+    console.error("getTeamsGameData caused an error")
+  }
+
+  return await response.json();
+}
+
+export { getTeam, startGame, getGameOnID, getPlays, getTeamsGameData }

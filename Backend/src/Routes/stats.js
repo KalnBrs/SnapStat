@@ -9,9 +9,14 @@ const { authenticateToken } = require('../Controllers/authControllers')
 
 router.use('/', authenticateToken)
 
-router.param('player_id', findPlayerId)
+
 router.param('game_id', findGameId)
+
+router.route('/teams/:game_id')
+  .get(getTeamStatsGame)
+
 router.param('team_id', findTeamId)
+router.param('player_id', findPlayerId)
 
 router.route('/:player_id/:game_id')
   .get(getPlayersStatsGame)
@@ -21,8 +26,5 @@ router.route('/:player_id')
 
 router.route('/teams')
   .get(getTeamStats)
-
-router.route('/teams/:game_id')
-  .get(getTeamStatsGame)
 
 module.exports = router
