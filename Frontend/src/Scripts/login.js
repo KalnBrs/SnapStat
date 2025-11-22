@@ -4,7 +4,7 @@ import Error from "../Components/Error";
 
 async function getGames() {
   const user = store.getState().user.user
-  const response = await fetch(`https://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/users/games`, {
+  const response = await fetch(`https://ec2-13-217-114-28.compute-1.amazonaws.com/api/users/games`, {
     method: "GET",
     headers: {
       "Authorization": `Bearer ${user.accessToken}`,
@@ -20,7 +20,7 @@ async function getGames() {
 
 async function getTeams() {
   const user = store.getState().user.user
-  const response = await fetch(`https://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/users/teams`, {
+  const response = await fetch(`https://ec2-13-217-114-28.compute-1.amazonaws.com/api/users/teams`, {
     method: "GET",
     headers: {
       "Authorization": `Bearer ${user.accessToken}`,
@@ -35,7 +35,7 @@ async function getTeams() {
 }
 
 async function logIn(username, password) {
-  const response = await fetch(`https://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/auth/login`, {
+  const response = await fetch(`https://ec2-13-217-114-28.compute-1.amazonaws.com/api/auth/login`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -59,7 +59,7 @@ async function logIn(username, password) {
 }
 
 async function logOut() {
-  const res = await fetch('https://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/auth/logout', {
+  const res = await fetch('https://ec2-13-217-114-28.compute-1.amazonaws.com/api/auth/logout', {
     method: 'POST',
     credentials: 'include'
   });
@@ -70,7 +70,7 @@ async function logOut() {
 }
 
 async function refreshToken() {
-  const res = await fetch('https://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/auth/refresh', {
+  const res = await fetch('https://ec2-13-217-114-28.compute-1.amazonaws.com/api/auth/refresh', {
     method: 'POST',
     credentials: 'include'
   });
@@ -83,7 +83,7 @@ async function refreshToken() {
   store.dispatch(setAccessToken(data.accessToken));
 
   const user = store.getState().user.user
-  const res2 = await fetch (`https://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/auth/me`, {
+  const res2 = await fetch (`https://ec2-13-217-114-28.compute-1.amazonaws.com/api/auth/me`, {
     method: "GET",
     headers: {
       "Authorization": `Bearer ${user.accessToken}`
