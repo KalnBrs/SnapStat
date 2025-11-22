@@ -12,7 +12,7 @@ process.on('unhandledRejection', err => {
 const PORT = process.env.PORT
 
 try {
-  app.listen(PORT, () => console.log('Server running on port'));
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 } catch (err) {
   console.error('Error starting server:', err);
 }
