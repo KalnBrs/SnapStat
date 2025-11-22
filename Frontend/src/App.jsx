@@ -1,43 +1,45 @@
-import './App.css';
 
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import './App.css'
+
+import Tracker from './pages/Tracker';
+import Home from './pages/Home';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Login from './pages/Login';
 import { useEffect, useState } from 'react';
 import { refreshToken } from './Scripts/login';
-
+import { Navigate } from 'react-router-dom';
 import NavBar from './Components/NavBar';
-import Home from './pages/Home';
-import Login from './pages/Login';
+import GameSelect from '../src/pages/GameSelect';
 import Teams from './pages/Teams';
 import TeamView from './pages/TeamView';
-import GameSelect from './pages/GameSelect';
-import Tracker from './pages/Tracker';
 import Stats from './pages/Stats';
 
+
 function App() {
-  const [ready, setReady] = useState(false);
-  const [redirect, setRedirect] = useState(false);
+  const [ready, setReady] = useState(false)
+
 
   useEffect(() => {
     async function init() {
       try {
         await refreshToken();
-        setReady(true);
+        setReady(true)
       } catch (e) {
-        console.log(e);
-        setRedirect(true);
+        console.log(e)
+        setReady(true)
+        return <Navigate to="/login/" replace />; // Change to a route page
       }
     }
-    init();
-  }, []);
-
-  if (redirect) return <Navigate to="/login" replace />;
+    init()
+  }, [])
+  
   if (!ready) return null;
 
   return (
-    <Router>
-      <div className='w-[99.1vw]'>
+    <div className='w-[99.1vw]'>
         <NavBar />
-        <div className='mt-10'>
+        <div className=' mt-10'>
+        <Router>
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='/login' element={<Login />} />
@@ -47,10 +49,10 @@ function App() {
             <Route path='/tracker/:gameID' element={<Tracker />} />
             <Route path='/stats/:gameID' element={<Stats />} />
           </Routes>
+        </Router>
         </div>
-      </div>
-    </Router>
-  );
+    </div>
+  )
 }
 
-export default App;
+export default App
