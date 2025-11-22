@@ -2,7 +2,7 @@ import store from "../Store/store"
 
 async function getPlays(game_id) {
   const user = store.getState().user.user
-  const result = await fetch(`http://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/games/${game_id}/plays`, {
+  const result = await fetch(`https://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/games/${game_id}/plays`, {
     method: "GET",
     headers: {
       "Authorization": `Bearer ${user.accessToken}`,
@@ -18,7 +18,7 @@ async function getPlays(game_id) {
 
 async function getTeam(team_id) {
   const user = store.getState().user.user
-  const result = await fetch(`http://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/teams/${team_id}`, {
+  const result = await fetch(`https://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/teams/${team_id}`, {
     method: "GET",
     headers: {
       "Authorization": `Bearer ${user.accessToken}`,
@@ -34,7 +34,7 @@ async function getTeam(team_id) {
 
 async function startGame(homeTeamId, awayTeamId, date) {
   const user = store.getState().user.user
-  const result = await fetch(`http://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/games`, {
+  const result = await fetch(`https://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/games`, {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${user.accessToken}`,
@@ -53,7 +53,7 @@ async function startGame(homeTeamId, awayTeamId, date) {
 
   const data = await result.json()
 
-  const result2 = await fetch(`http://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/games/${data.game_id}`, {
+  const result2 = await fetch(`https://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/games/${data.game_id}`, {
     method: "PATCH",
     headers: {
       "Authorization": `Bearer ${user.accessToken}`,
@@ -78,7 +78,7 @@ async function startGame(homeTeamId, awayTeamId, date) {
 
 async function getGameOnID(game_id) {
   const user = store.getState().user.user
-  const response = await fetch(`http://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/games/${game_id}`, {
+  const response = await fetch(`https://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/games/${game_id}`, {
     method: "GET",
     headers: {
       "Authorization": `Bearer ${user.accessToken}`,
@@ -94,7 +94,7 @@ async function getGameOnID(game_id) {
 
 async function getTeamsGameData(game_id) {
   const user = store.getState().user.user
-  const response = await fetch(`http://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/stats/teams/${game_id}`, {
+  const response = await fetch(`https://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/stats/teams/${game_id}`, {
     method: "GET",
     headers: {
       "Authorization": `Bearer ${user.accessToken}`,

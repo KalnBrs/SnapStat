@@ -2,7 +2,7 @@ import store from "../Store/store"
 
 async function postTeam(team) {
   const user = store.getState().user.user;
-  const res = await fetch(`http://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/teams/`, {
+  const res = await fetch(`https://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/teams/`, {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${user.accessToken}`,
@@ -20,7 +20,7 @@ async function postTeam(team) {
 
 async function clearTeam(team) {
   const user = store.getState().user.user;
-  const res = await fetch(`http://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/teams/${team.team_id}`, {
+  const res = await fetch(`https://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/teams/${team.team_id}`, {
     method: "DELETE",
     headers: {
       "Authorization": `Bearer ${user.accessToken}`,
@@ -34,7 +34,7 @@ async function clearTeam(team) {
 
 async function updateTeam(data, team) {
   const user = store.getState().user.user;
-  const res = await fetch(`http://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/teams/${team.team_id}`, {
+  const res = await fetch(`https://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/teams/${team.team_id}`, {
     method: "PATCH",
     credentials: 'include',
     headers: {

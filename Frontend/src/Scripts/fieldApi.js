@@ -13,7 +13,7 @@ const fetchSetData = async (game_id) => {
   }
 
   try {
-    const res = await fetch(`http://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/games/${game_id}`, {
+    const res = await fetch(`https://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/games/${game_id}`, {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${user.accessToken}`,
@@ -38,7 +38,7 @@ const fetchTeam = async (team_id, type) => {
   }
 
   try {
-    const res = await fetch(`http://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/teams/${team_id}`, {
+    const res = await fetch(`https://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/teams/${team_id}`, {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${user.accessToken}`,
@@ -66,7 +66,7 @@ const fetchRoster = async (team_id, type) => {
   }
 
   try {
-    const res = await fetch(`http://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/teams/${team_id}/players`, {
+    const res = await fetch(`https://ec2-13-217-114-28.compute-1.amazonaws.com:8000//api/teams/${team_id}/players`, {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${user.accessToken}`,
